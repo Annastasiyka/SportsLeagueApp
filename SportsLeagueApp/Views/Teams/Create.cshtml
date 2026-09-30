@@ -1,0 +1,46 @@
+@model SportsLeagueApp.Models.Team
+
+@{
+    ViewData["Title"] = "Додати команду";
+}
+
+<div class="container py-4" style="max-width: 700px;">
+    <h1 class="fw-bold mb-4" style="font-size: 2.2rem;">Додати команду</h1>
+
+    <div class="card border rounded-3 p-4 shadow-none bg-white">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label fw-semibold">Назва команди</label>
+                <input asp-for="Name" class="form-control" placeholder="Введіть назву..." />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="City" class="form-label fw-semibold">Місто</label>
+                <input asp-for="City" class="form-control" placeholder="Введіть місто..." />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CoachName" class="form-label fw-semibold">Тренер</label>
+                <input asp-for="CoachName" class="form-control" placeholder="Ім'я тренера..." />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FoundedYear" class="form-label fw-semibold">Рік заснування</label>
+                <input asp-for="FoundedYear" class="form-control" type="number" placeholder="2020" />
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="HomeStadium" class="form-label fw-semibold">Домашній стадіон</label>
+                <input asp-for="HomeStadium" class="form-control" placeholder="Назва стадіону..." />
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <input type="submit" value="Додати" class="btn btn-primary px-4 py-2" />
+                <a asp-action="Index" class="text-decoration-none text-secondary">Скасувати</a>
+            </div>
+        </form>
+    </div>
+</div>

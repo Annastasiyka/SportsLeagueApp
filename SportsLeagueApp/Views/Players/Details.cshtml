@@ -1,0 +1,27 @@
+@model SportsLeagueApp.Models.Player
+
+@{
+    ViewData["Title"] = "Деталі гравця";
+}
+
+<div class="container py-4" style="max-width: 700px;">
+    <h1 class="fw-bold mb-4" style="font-size: 2.2rem;">@Model.FirstName @Model.LastName</h1>
+
+    <div class="card border rounded-3 p-4 shadow-none bg-white mb-4">
+        <dl class="row mb-0">
+            <dt class="col-sm-4 text-secondary mb-3">Позиція:</dt>
+            <dd class="col-sm-8 fw-medium mb-3">@Model.Position</dd>
+
+            <dt class="col-sm-4 text-secondary mb-3">Ігровий номер:</dt>
+            <dd class="col-sm-8 fw-medium mb-3">@Model.JerseyNumber</dd>
+
+            <dt class="col-sm-4 text-secondary mb-0">Дата народження:</dt>
+            <dd class="col-sm-8 fw-medium mb-0">@Model.DateOfBirth.ToString("dd.MM.yyyy")</dd>
+        </dl>
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary px-4 py-2">Редагувати</a>
+        <a asp-action="Index" class="text-decoration-none text-secondary">Назад до списку</a>
+    </div>
+</div>
