@@ -1,150 +1,287 @@
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SportsLeagueApp.Models;
 using SportsLeagueApp.Data;
+using SportsLeagueApp.Models;
 
-public class PlayersController : Controller
+namespace SportsLeagueApp.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public PlayersController(AppDbContext context)
+    public class PlayersController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    // GET: PLAYERS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.Players.ToListAsync());
-    }
-
-    // GET: PLAYERS/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null)
+        public PlayersController(AppDbContext context)
         {
-            return NotFound();
+            _context = context;
         }
 
-        var player = await _context.Players
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (player == null)
+        public async Task<IActionResult> Index()
         {
-            return NotFound();
+            var players = await _context.Players.Include(p => p.Teams).ToListAsync();
+            return View(players);
         }
 
-        return View(player);
-    }
-
-    // GET: PLAYERS/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: PLAYERS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,DateOfBirth,Position,JerseyNumber,Teams")] Player player)
-    {
-        if (ModelState.IsValid)
+        public async Task<IActionResult> Details(int? id)
         {
-            _context.Add(player);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(player);
-    }
+            if (id == null) return NotFound();
 
-    // GET: PLAYERS/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
+            var player = await _context.Players
+                .Include(p => p.Teams)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (player == null) return NotFound();
+
+            return View(player);
         }
 
-        var player = await _context.Players.FindAsync(id);
-        if (player == null)
+        // GET: Players/Create
+        public IActionResult Create(bool restoreDraft = false)
         {
-            return NotFound();
-        }
-        return View(player);
-    }
+            string? jsonDraft = HttpContext.Session.GetString("PlayerCreateDraft");
+            Player playerToDisplay = new Player();
 
-    // POST: PLAYERS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,FirstName,LastName,DateOfBirth,Position,JerseyNumber,Teams")] Player player)
-    {
-        if (id != player.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
+            if (!string.IsNullOrEmpty(jsonDraft))
             {
-                _context.Update(player);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlayerExists(player.Id))
+                if (restoreDraft)
                 {
-                    return NotFound();
+                    var draftDto = JsonSerializer.Deserialize<PlayerDraftDto>(jsonDraft);
+                    if (draftDto != null)
+                    {
+                        playerToDisplay = new Player
+                        {
+                            FirstName = draftDto.FirstName,
+                            LastName = draftDto.LastName,
+                            DateOfBirth = draftDto.DateOfBirth,
+                            Position = draftDto.Position,
+                            JerseyNumber = draftDto.JerseyNumber,
+                            Teams = _context.Teams
+                                .Where(t => draftDto.SelectedTeamIds.Contains(t.Id))
+                                .ToList()
+                        };
+                    }
                 }
                 else
                 {
-                    throw;
+                    ViewBag.HasDraft = true;
                 }
             }
+
+            ViewBag.AllTeams = _context.Teams.ToList();
+            return View(playerToDisplay);
+        }
+
+        // POST: Players/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,DateOfBirth,Position,JerseyNumber")] Player player, int[] selectedTeams)
+        {
+            var draftDto = new PlayerDraftDto
+            {
+                FirstName = player.FirstName,
+                LastName = player.LastName,
+                DateOfBirth = player.DateOfBirth,
+                Position = player.Position,
+                JerseyNumber = player.JerseyNumber,
+                SelectedTeamIds = selectedTeams ?? System.Array.Empty<int>()
+            };
+
+            HttpContext.Session.SetString("PlayerCreateDraft", JsonSerializer.Serialize(draftDto));
+
+            if (selectedTeams != null && selectedTeams.Length > 0)
+            {
+                player.Teams = _context.Teams.Where(t => selectedTeams.Contains(t.Id)).ToList();
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(player);
+                await _context.SaveChangesAsync();
+
+                HttpContext.Session.Remove("PlayerCreateDraft");
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.AllTeams = _context.Teams.ToList();
+            return View(player);
+        }
+
+        public IActionResult CancelCreate()
+        {
+            HttpContext.Session.Remove("PlayerCreateDraft");
             return RedirectToAction(nameof(Index));
         }
-        return View(player);
-    }
 
-    // GET: PLAYERS/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
+        // GET: Players/Edit/5
+        public async Task<IActionResult> Edit(int? id, bool restoreDraft = false)
         {
-            return NotFound();
+            if (id == null) return NotFound();
+
+            var playerFromDb = await _context.Players
+                .Include(p => p.Teams)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (playerFromDb == null) return NotFound();
+
+            // Зберігаємо початковий стан з БД у сесію
+            var originalDto = new PlayerDraftDto
+            {
+                Id = playerFromDb.Id,
+                FirstName = playerFromDb.FirstName,
+                LastName = playerFromDb.LastName,
+                DateOfBirth = playerFromDb.DateOfBirth,
+                Position = playerFromDb.Position,
+                JerseyNumber = playerFromDb.JerseyNumber,
+                SelectedTeamIds = playerFromDb.Teams.Select(t => t.Id).ToArray()
+            };
+            HttpContext.Session.SetString($"PlayerOriginal_{id}", JsonSerializer.Serialize(originalDto));
+
+            string draftKey = $"PlayerEditDraft_{id}";
+            string? jsonDraft = HttpContext.Session.GetString(draftKey);
+
+            Player playerToDisplay = playerFromDb;
+
+            if (!string.IsNullOrEmpty(jsonDraft))
+            {
+                if (restoreDraft)
+                {
+                    var draftDto = JsonSerializer.Deserialize<PlayerDraftDto>(jsonDraft);
+                    if (draftDto != null)
+                    {
+                        playerToDisplay = new Player
+                        {
+                            Id = playerFromDb.Id,
+                            FirstName = draftDto.FirstName,
+                            LastName = draftDto.LastName,
+                            DateOfBirth = draftDto.DateOfBirth,
+                            Position = draftDto.Position,
+                            JerseyNumber = draftDto.JerseyNumber,
+                            Teams = _context.Teams
+                                .Where(t => draftDto.SelectedTeamIds.Contains(t.Id))
+                                .ToList()
+                        };
+                    }
+                }
+                else
+                {
+                    ViewBag.HasDraft = true;
+                }
+            }
+
+            ViewBag.AllTeams = _context.Teams.ToList();
+            return View(playerToDisplay);
         }
 
-        var player = await _context.Players
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (player == null)
+        // POST: Players/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,DateOfBirth,Position,JerseyNumber")] Player player, int[] selectedTeams)
         {
-            return NotFound();
+            if (id != player.Id) return NotFound();
+
+            var draftDto = new PlayerDraftDto
+            {
+                Id = player.Id,
+                FirstName = player.FirstName,
+                LastName = player.LastName,
+                DateOfBirth = player.DateOfBirth,
+                Position = player.Position,
+                JerseyNumber = player.JerseyNumber,
+                SelectedTeamIds = selectedTeams ?? System.Array.Empty<int>()
+            };
+
+            string draftKey = $"PlayerEditDraft_{id}";
+            HttpContext.Session.SetString(draftKey, JsonSerializer.Serialize(draftDto));
+
+            if (selectedTeams != null && selectedTeams.Length > 0)
+            {
+                player.Teams = _context.Teams.Where(t => selectedTeams.Contains(t.Id)).ToList();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var playerToUpdate = await _context.Players
+                        .Include(p => p.Teams)
+                        .FirstOrDefaultAsync(p => p.Id == id);
+
+                    if (playerToUpdate == null) return NotFound();
+
+                    playerToUpdate.FirstName = player.FirstName;
+                    playerToUpdate.LastName = player.LastName;
+                    playerToUpdate.DateOfBirth = player.DateOfBirth;
+                    playerToUpdate.Position = player.Position;
+                    playerToUpdate.JerseyNumber = player.JerseyNumber;
+
+                    playerToUpdate.Teams.Clear();
+                    if (selectedTeams != null && selectedTeams.Length > 0)
+                    {
+                        var newTeams = _context.Teams.Where(t => selectedTeams.Contains(t.Id)).ToList();
+                        foreach (var team in newTeams)
+                        {
+                            playerToUpdate.Teams.Add(team);
+                        }
+                    }
+
+                    _context.Update(playerToUpdate);
+                    await _context.SaveChangesAsync();
+
+                    HttpContext.Session.Remove(draftKey);
+                    HttpContext.Session.Remove($"PlayerOriginal_{id}");
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!PlayerExists(player.Id)) return NotFound();
+                    else throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.AllTeams = _context.Teams.ToList();
+            return View(player);
         }
 
-        return View(player);
-    }
-
-    // POST: PLAYERS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
-    {
-        var player = await _context.Players.FindAsync(id);
-        if (player != null)
+        public IActionResult CancelEdit(int id)
         {
-            _context.Players.Remove(player);
+            HttpContext.Session.Remove($"PlayerEditDraft_{id}");
+            HttpContext.Session.Remove($"PlayerOriginal_{id}");
+            return RedirectToAction(nameof(Index));
         }
 
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
 
-    private bool PlayerExists(int? id)
-    {
-        return _context.Players.Any(e => e.Id == id);
+            var player = await _context.Players
+                .Include(p => p.Teams)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (player == null) return NotFound();
+
+            return View(player);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var player = await _context.Players.FindAsync(id);
+            if (player != null)
+            {
+                _context.Players.Remove(player);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool PlayerExists(int id)
+        {
+            return _context.Players.Any(e => e.Id == id);
+        }
     }
 }

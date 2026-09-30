@@ -18,6 +18,17 @@
 
             <dt class="col-sm-4 text-secondary mb-0">Тренер:</dt>
             <dd class="col-sm-8 fw-medium mb-0">@Model.CoachName</dd>
+            <dt class="col-sm-4 text-secondary mb-0">Склад команди:</dt>
+            <dd class="col-sm-8 fw-medium mb-0">
+                @if (Model.Players != null && Model.Players.Any())
+                {
+                    @string.Join(", ", Model.Players.Select(p => p.LastName))
+                }
+                else
+                {
+                    <span class="text-muted">Немає гравців</span>
+                }
+            </dd>
         </dl>
     </div>
 

@@ -11,14 +11,15 @@
     </div>
 
     <div class="table-responsive border rounded-3 bg-white mb-4">
-        <table class="table mb-0 align-middle">
+        <table class="table table-bordered mb-0 align-middle text-center">
             <thead class="table-light border-bottom">
                 <tr>
                     <th class="py-3 px-4 fw-semibold text-dark">Ім'я та прізвище</th>
                     <th class="py-3 px-4 fw-semibold text-dark">Позиція</th>
                     <th class="py-3 px-4 fw-semibold text-dark">Номер</th>
                     <th class="py-3 px-4 fw-semibold text-dark">Дата народження</th>
-                    <th class="py-3 px-4 fw-semibold text-dark text-end">Дії</th>
+                    <th class="py-3 px-4 fw-semibold text-dark">Поточна команда</th>
+                    <th class="py-3 px-4 fw-semibold text-dark text-center">Дії</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,10 +31,20 @@
                             <td class="py-3 px-4 fw-medium">@item.FirstName @item.LastName</td>
                             <td class="py-3 px-4">@item.Position</td>
                             <td class="py-3 px-4">@item.JerseyNumber</td>
-                            <td class="py-3 px-4">@item.DateOfBirth.ToString("dd.MM.yyyy")</td>
-                            <td class="py-3 px-4 text-end">
-                                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none me-2">Деталі</a> |
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none mx-2">Редагувати</a> |
+                            <td class="py-3 px-4">@item.DateOfBirth?.ToString("dd.MM.yyyy")</td>
+                            <td class="py-3 px-4">
+                                @if (item.Teams != null && item.Teams.Any())
+                                {
+                                    @string.Join(", ", item.Teams.Select(t => t.Name))
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">—</span>
+                                }
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark me-2">Деталі</a> |
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none text-dark mx-2">Редагувати</a> |
                                 <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none text-danger ms-2">Видалити</a>
                             </td>
                         </tr>
@@ -42,7 +53,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="5" class="text-center py-4 text-muted">Ще немає доданих гравців.</td>
+                        <td colspan="6" class="text-center py-4 text-muted">Ще немає доданих гравців.</td>
                     </tr>
                 }
             </tbody>
@@ -50,6 +61,12 @@
     </div>
 
     <div>
-        <a href="/Home" class="text-decoration-none text-primary">&larr; На головну</a>
+        <a href="/Home" class="text-decoration-none text-dark fw-medium">&larr; На головну</a>
     </div>
 </div>
+
+<style>
+    tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+</style>

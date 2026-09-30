@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Numerics;
 
 namespace SportsLeagueApp.Models
 {
@@ -7,17 +6,49 @@ namespace SportsLeagueApp.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Назва команди є обов'язковою")]
-        public string? Name { get; set; }
+        private string? _name;
+        [Required(ErrorMessage = "Заповніть інформацію про назву команди")]
+        public string? Name
+        {
+            get => _name;
+            set => _name = CapitalizeFirst(value);
+        }
 
-        public string? City { get; set; }
+        private string? _city;
+        [Required(ErrorMessage = "Заповніть інформацію про місто")]
+        public string? City
+        {
+            get => _city;
+            set => _city = CapitalizeFirst(value);
+        }
 
-        public int FoundedYear { get; set; }
+        [Required(ErrorMessage = "Вкажіть рік заснування")]
+        [Range(1800, 2100, ErrorMessage = "Рік заснування має бути в межах від 1800 до 2100 (не може бути від'ємним)")]
+        public int? FoundedYear { get; set; }
 
-        public string? CoachName { get; set; }
+        private string? _coachName;
+        [Required(ErrorMessage = "Заповніть інформацію про тренера")]
+        public string? CoachName
+        {
+            get => _coachName;
+            set => _coachName = CapitalizeFirst(value);
+        }
 
-        public string? HomeStadium { get; set; }
+        private string? _homeStadium;
+        [Required(ErrorMessage = "Заповніть інформацію про домашній стадіон")]
+        public string? HomeStadium
+        {
+            get => _homeStadium;
+            set => _homeStadium = CapitalizeFirst(value);
+        }
 
         public List<Player> Players { get; set; } = new List<Player>();
+
+        private static string? CapitalizeFirst(string? s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return s;
+            s = s.Trim();
+            return char.ToUpper(s[0]) + (s.Length > 1 ? s.Substring(1) : string.Empty);
+        }
     }
 }

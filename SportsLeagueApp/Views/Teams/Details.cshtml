@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Деталі команди";
 }
-
 <div class="container py-4" style="max-width: 700px;">
     <h1 class="fw-bold mb-4" style="font-size: 2.2rem;">@Model.Name</h1>
 
@@ -18,8 +17,25 @@
             <dt class="col-sm-4 text-secondary mb-3">Рік заснування:</dt>
             <dd class="col-sm-8 fw-medium mb-3">@Model.FoundedYear</dd>
 
-            <dt class="col-sm-4 text-secondary mb-0">Стадіон:</dt>
-            <dd class="col-sm-8 fw-medium mb-0">@Model.HomeStadium</dd>
+            <dt class="col-sm-4 text-secondary mb-3">Стадіон:</dt>
+            <dd class="col-sm-8 fw-medium mb-3">@Model.HomeStadium</dd>
+
+            <dt class="col-sm-4 text-secondary mb-0">Склад команди:</dt>
+            <dd class="col-sm-8 fw-medium mb-0">
+                @if (Model.Players != null && Model.Players.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var player in Model.Players)
+                        {
+                            <li>@player.FirstName @player.LastName <span class="text-muted small">(@player.Position)</span></li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span class="text-muted">У цій команді поки немає гравців.</span>
+                }
+            </dd>
         </dl>
     </div>
 

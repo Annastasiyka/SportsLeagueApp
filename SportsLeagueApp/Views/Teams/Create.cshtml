@@ -7,6 +7,17 @@
 <div class="container py-4" style="max-width: 700px;">
     <h1 class="fw-bold mb-4" style="font-size: 2.2rem;">Додати команду</h1>
 
+    @if (ViewBag.HasDraft == true)
+    {
+        <div class="alert alert-warning d-flex justify-content-between align-items-center mb-4">
+            <span>Знайдено незбережені дані додавання команди!</span>
+            <div>
+                <a asp-action="Create" asp-route-restoreDraft="true" class="btn btn-sm btn-primary me-2">Відновити</a>
+                <a asp-action="CancelCreate" class="btn btn-sm btn-outline-danger">Очистити</a>
+            </div>
+        </div>
+    }
+
     <div class="card border rounded-3 p-4 shadow-none bg-white">
         <form asp-action="Create" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -20,27 +31,64 @@
             <div class="mb-3">
                 <label asp-for="City" class="form-label fw-semibold">Місто</label>
                 <input asp-for="City" class="form-control" placeholder="Введіть місто..." />
+                <span asp-validation-for="City" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="CoachName" class="form-label fw-semibold">Тренер</label>
                 <input asp-for="CoachName" class="form-control" placeholder="Ім'я тренера..." />
+                <span asp-validation-for="CoachName" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="FoundedYear" class="form-label fw-semibold">Рік заснування</label>
                 <input asp-for="FoundedYear" class="form-control" type="number" placeholder="2020" />
+                <span asp-validation-for="FoundedYear" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="HomeStadium" class="form-label fw-semibold">Домашній стадіон</label>
+                <input asp-for="HomeStadium" class="form-control" placeholder="Назва стадіону..." />
+                <span asp-validation-for="HomeStadium" class="text-danger small"></span>
             </div>
 
             <div class="mb-4">
-                <label asp-for="HomeStadium" class="form-label fw-semibold">Домашній стадіон</label>
-                <input asp-for="HomeStadium" class="form-control" placeholder="Назва стадіону..." />
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label fw-semibold m-0">Склад команди (виберіть гравців)</label>
+                    <a href="/Players/Create" target="_blank" class="text-decoration-none small text-primary">+ Створити нового гравця</a>
+                </div>
+
+                <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
+                    @if (ViewBag.AllPlayers != null && ((IEnumerable<SportsLeagueApp.Models.Player>)ViewBag.AllPlayers).Any())
+                    {
+                        foreach (var player in ViewBag.AllPlayers)
+                        {
+                            bool isSelected = Model.Players != null && Model.Players.Any(p => p.Id == player.Id);
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="selectedPlayers" value="@player.Id" id="player_@player.Id" @(isSelected ? "checked" : "")>
+                                <label class="form-check-label text-dark" for="player_@player.Id" style="cursor: pointer;">
+                                    @player.FirstName @player.LastName <span class="text-muted small">(@player.Position)</span>
+                                </label>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-muted small text-center py-2">У системі ще немає гравців. Створіть їх у розділі "Гравці".</div>
+                    }
+                </div>
             </div>
 
             <div class="d-flex align-items-center gap-3">
                 <input type="submit" value="Додати" class="btn btn-primary px-4 py-2" />
-                <a asp-action="Index" class="text-decoration-none text-secondary">Скасувати</a>
+                <a asp-action="CancelCreate" class="text-decoration-none text-secondary">Скасувати</a>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -15,8 +15,20 @@
             <dt class="col-sm-4 text-secondary mb-3">Ігровий номер:</dt>
             <dd class="col-sm-8 fw-medium mb-3">@Model.JerseyNumber</dd>
 
-            <dt class="col-sm-4 text-secondary mb-0">Дата народження:</dt>
-            <dd class="col-sm-8 fw-medium mb-0">@Model.DateOfBirth.ToString("dd.MM.yyyy")</dd>
+            <dt class="col-sm-4 text-secondary mb-3">Дата народження:</dt>
+            <dd class="col-sm-8 fw-medium mb-3">@Model.DateOfBirth?.ToString("dd.MM.yyyy")</dd>
+
+            <dt class="col-sm-4 text-secondary mb-0">Команди:</dt>
+            <dd class="col-sm-8 fw-medium mb-0">
+                @if (Model.Teams != null && Model.Teams.Any())
+                {
+                    @string.Join(", ", Model.Teams.Select(t => t.Name))
+                }
+                else
+                {
+                    <span class="text-muted">Вільний агент (немає команд)</span>
+                }
+            </dd>
         </dl>
     </div>
 

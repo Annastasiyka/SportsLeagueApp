@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Команди";
 }
-
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="fw-bold m-0" style="font-size: 2.5rem;">Команди</h1>
@@ -11,14 +10,14 @@
     </div>
 
     <div class="table-responsive border rounded-3 bg-white mb-4">
-        <table class="table mb-0 align-middle">
+        <table class="table table-bordered mb-0 align-middle text-center">
             <thead class="table-light border-bottom">
                 <tr>
                     <th class="py-3 px-4 fw-semibold text-dark">Назва команди</th>
                     <th class="py-3 px-4 fw-semibold text-dark">Місто</th>
                     <th class="py-3 px-4 fw-semibold text-dark">Тренер</th>
                     <th class="py-3 px-4 fw-semibold text-dark">Стадіон</th>
-                    <th class="py-3 px-4 fw-semibold text-dark text-end">Дії</th>
+                    <th class="py-3 px-4 fw-semibold text-dark text-center">Дії</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,13 +26,17 @@
                     foreach (var item in Model)
                     {
                         <tr>
-                            <td class="py-3 px-4 fw-medium">@item.Name</td>
+                            <td class="py-3 px-4 fw-medium">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark">
+                                    @item.Name
+                                </a>
+                            </td>
                             <td class="py-3 px-4">@item.City</td>
                             <td class="py-3 px-4">@item.CoachName</td>
                             <td class="py-3 px-4">@item.HomeStadium</td>
-                            <td class="py-3 px-4 text-end">
-                                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none me-2">Деталі</a> |
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none mx-2">Редагувати</a> |
+                            <td class="py-3 px-4 text-center">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark me-2">Деталі</a> |
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none text-dark mx-2">Редагувати</a> |
                                 <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none text-danger ms-2">Видалити</a>
                             </td>
                         </tr>
@@ -50,6 +53,12 @@
     </div>
 
     <div>
-        <a href="/Home" class="text-decoration-none text-primary">&larr; На головну</a>
+        <a href="/Home" class="text-decoration-none text-dark fw-medium">&larr; На головну</a>
     </div>
 </div>
+
+<style>
+    tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+</style>

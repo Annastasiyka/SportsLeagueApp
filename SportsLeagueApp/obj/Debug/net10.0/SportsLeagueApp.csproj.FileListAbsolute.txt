@@ -367,3 +367,4 @@ C:\Study\5 course\Server Web programing\SportsLeagueApp\SportsLeagueApp\bin\Debu
 C:\Study\5 course\Server Web programing\SportsLeagueApp\SportsLeagueApp\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Study\5 course\Server Web programing\SportsLeagueApp\SportsLeagueApp\obj\Debug\net10.0\SportsLeagueApp.RazorAssemblyInfo.cache
 C:\Study\5 course\Server Web programing\SportsLeagueApp\SportsLeagueApp\obj\Debug\net10.0\SportsLeagueApp.RazorAssemblyInfo.cs
+C:\Study\5 course\Server Web programing\SportsLeagueApp\SportsLeagueApp\obj\Debug\net10.0\SportsLeagueApp.sourcelink.json

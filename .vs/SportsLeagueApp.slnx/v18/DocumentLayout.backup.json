@@ -1,12 +1,309 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\views\\players\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\views\\players\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\views\\players\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\views\\players\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\models\\playerdraftdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\models\\playerdraftdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\models\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\models\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\controllers\\playerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\controllers\\playerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\models\\teamdraftdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\models\\teamdraftdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\views\\players\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\views\\players\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\views\\players\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\views\\players\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\controllers\\teamscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\controllers\\teamscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\helpers\\sessionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\helpers\\sessionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\views\\teams\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\views\\teams\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\views\\teams\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\views\\teams\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\models\\team.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\models\\team.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\views\\teams\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\views\\teams\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|c:\\study\\5 course\\server web programing\\sportsleagueapp\\sportsleagueapp\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3FF6EBC-AE0D-62A6-AC62-1ED5CBDDC997}|SportsLeagueApp\\SportsLeagueApp.csproj|solutionrelative:sportsleagueapp\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Players\\Details.cshtml",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Views\\Players\\Details.cshtml",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Players\\Details.cshtml",
+              "RelativeToolTip": "SportsLeagueApp\\Views\\Players\\Details.cshtml",
+              "ViewState": "AgIAABwAAAAAAAAAAAAAwCYAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-30T11:48:07.524Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Players\\Index.cshtml",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Views\\Players\\Index.cshtml",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Players\\Index.cshtml",
+              "RelativeToolTip": "SportsLeagueApp\\Views\\Players\\Index.cshtml",
+              "ViewState": "AgIAACwAAAAAAAAAAAAkwEcAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-30T09:47:35.346Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Player.cs",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Models\\Player.cs",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Models\\Player.cs",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Models\\Player.cs",
+              "RelativeToolTip": "SportsLeagueApp\\Models\\Player.cs",
+              "ViewState": "AgIAACsAAAAAAAAAAAAcwDMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-30T10:13:35.896Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PlayerDraftDto.cs",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Models\\PlayerDraftDto.cs",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Models\\PlayerDraftDto.cs",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Models\\PlayerDraftDto.cs",
+              "RelativeToolTip": "SportsLeagueApp\\Models\\PlayerDraftDto.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAADwvw4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-30T11:23:30.341Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "PlayersController.cs",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Controllers\\PlayersController.cs",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Controllers\\PlayersController.cs",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Controllers\\PlayersController.cs",
+              "RelativeToolTip": "SportsLeagueApp\\Controllers\\PlayersController.cs",
+              "ViewState": "AgIAAP8AAAAAAAAAAAAAwB4BAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-30T10:16:26.187Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "TeamDraftDto.cs",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Models\\TeamDraftDto.cs",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Models\\TeamDraftDto.cs",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Models\\TeamDraftDto.cs",
+              "RelativeToolTip": "SportsLeagueApp\\Models\\TeamDraftDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-30T11:23:07.001Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Players\\Edit.cshtml",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Views\\Players\\Edit.cshtml",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Players\\Edit.cshtml",
+              "RelativeToolTip": "SportsLeagueApp\\Views\\Players\\Edit.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-30T10:00:35.911Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Players\\Create.cshtml",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Views\\Players\\Create.cshtml",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Players\\Create.cshtml",
+              "RelativeToolTip": "SportsLeagueApp\\Views\\Players\\Create.cshtml",
+              "ViewState": "AgIAADcAAAAAAAAAAAAmwFcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-30T10:00:15.021Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "TeamsController.cs",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Controllers\\TeamsController.cs",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Controllers\\TeamsController.cs",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Controllers\\TeamsController.cs",
+              "RelativeToolTip": "SportsLeagueApp\\Controllers\\TeamsController.cs",
+              "ViewState": "AgIAAAgBAAAAAAAAAADwvyYBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-30T10:16:11Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "SessionExtensions.cs",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Helpers\\SessionExtensions.cs",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Helpers\\SessionExtensions.cs",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Helpers\\SessionExtensions.cs",
+              "RelativeToolTip": "SportsLeagueApp\\Helpers\\SessionExtensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-30T11:06:35.461Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Program.cs",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Program.cs",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Program.cs",
+              "RelativeToolTip": "SportsLeagueApp\\Program.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAADwvycAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-30T10:14:20.069Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Teams\\Edit.cshtml",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Views\\Teams\\Edit.cshtml",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Teams\\Edit.cshtml",
+              "RelativeToolTip": "SportsLeagueApp\\Views\\Teams\\Edit.cshtml",
+              "ViewState": "AgIAADoAAAAAAAAAAAAowFsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-30T10:21:47.904Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Teams\\Create.cshtml",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Views\\Teams\\Create.cshtml",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Teams\\Create.cshtml",
+              "RelativeToolTip": "SportsLeagueApp\\Views\\Teams\\Create.cshtml",
+              "ViewState": "AgIAAD0AAAAAAAAAAAAmwF0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-30T10:40:21.249Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Team.cs",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Models\\Team.cs",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Models\\Team.cs",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Models\\Team.cs",
+              "RelativeToolTip": "SportsLeagueApp\\Models\\Team.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAYwDUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-30T10:13:17.975Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Teams\\Index.cshtml",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Views\\Teams\\Index.cshtml",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Teams\\Index.cshtml",
+              "RelativeToolTip": "SportsLeagueApp\\Views\\Teams\\Index.cshtml",
+              "ViewState": "AgIAACAAAAAAAAAAAAAgwD8AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-30T09:47:27.622Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "SportsLeagueApp\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAwBcAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-30T09:49:32.062Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "SportsLeagueApp\\Views\\_ViewImports.cshtml",
+              "ToolTip": "C:\\Study\\5 course\\Server Web programing\\SportsLeagueApp\\SportsLeagueApp\\Views\\_ViewImports.cshtml",
+              "RelativeToolTip": "SportsLeagueApp\\Views\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-30T10:23:15.466Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

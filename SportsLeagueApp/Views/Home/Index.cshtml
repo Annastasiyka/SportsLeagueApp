@@ -5,7 +5,6 @@
     ViewData["Title"] = "Головна";
     var recentTeams = _context.Teams.OrderByDescending(t => t.Id).Take(5).ToList();
 }
-
 <div class="container py-4">
     <div class="mb-5">
         <h1 class="fw-bold mb-2" style="font-size: 2.5rem;">Головна</h1>
@@ -22,7 +21,7 @@
                         <p class="text-secondary mb-4">Список команд, їх міста та стадіони</p>
                     </div>
                     <div>
-                        <a href="/Teams" class="text-decoration-none text-primary fw-medium">Перейти до команд &rarr;</a>
+                        <a href="/Teams" class="text-decoration-none text-dark fw-medium">Перейти до команд &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -36,7 +35,7 @@
                         <p class="text-secondary mb-4">Профілі гравців та їхні ігрові номери</p>
                     </div>
                     <div>
-                        <a href="/Players" class="text-decoration-none text-primary fw-medium">Перейти до гравців &rarr;</a>
+                        <a href="/Players" class="text-decoration-none text-dark fw-medium">Перейти до гравців &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -46,7 +45,7 @@
     <div class="mb-4">
         <h3 class="fw-bold fs-4 mb-3">Нещодавно додані команди</h3>
         <div class="table-responsive border rounded-3 bg-white">
-            <table class="table mb-0 align-middle">
+            <table class="table table-bordered mb-0 align-middle">
                 <thead class="table-light border-bottom">
                     <tr>
                         <th class="py-3 px-4 fw-semibold text-dark">Назва команди</th>
@@ -59,10 +58,14 @@
                     {
                         foreach (var team in recentTeams)
                         {
-                            <tr>
-                                <td class="py-3 px-4">@team.Name</td>
-                                <td class="py-3 px-4">@team.City</td>
-                                <td class="py-3 px-4">@team.CoachName</td>
+                            <tr style="cursor: pointer;" onclick="window.location.href='@Url.Action("Details", "Teams", new { id = team.Id })'" class="position-relative">
+                                <td class="py-3 px-4 fw-medium text-dark">
+                                    <a asp-controller="Teams" asp-action="Details" asp-route-id="@team.Id" class="text-decoration-none text-dark stretched-link">
+                                        @team.Name
+                                    </a>
+                                </td>
+                                <td class="py-3 px-4 text-dark">@team.City</td>
+                                <td class="py-3 px-4 text-dark">@team.CoachName</td>
                             </tr>
                         }
                     }
@@ -77,3 +80,9 @@
         </div>
     </div>
 </div>
+
+<style>
+    tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+</style>
