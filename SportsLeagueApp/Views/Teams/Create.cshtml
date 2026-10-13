@@ -4,8 +4,11 @@
     ViewData["Title"] = "Додати команду";
 }
 
-<div class="container py-4" style="max-width: 700px;">
-    <h1 class="fw-bold mb-4" style="font-size: 2.2rem;">Додати команду</h1>
+<div class="container py-4" style="max-width: 850px;">
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="color: #111827; font-size: 2rem;">Нова команда</h1>
+        <p class="text-secondary m-0">Створіть клуб та сформуйте склад гравців</p>
+    </div>
 
     @if (ViewBag.HasDraft == true)
     {
@@ -18,77 +21,126 @@
         </div>
     }
 
-    <div class="card border rounded-3 p-4 shadow-none bg-white">
+    <div class="card border-0 rounded-4 p-4 shadow-sm bg-white">
         <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 fw-medium"></div>
 
-            <div class="mb-3">
-                <label asp-for="Name" class="form-label fw-semibold">Назва команди</label>
-                <input asp-for="Name" class="form-control" placeholder="Введіть назву..." />
-                <span asp-validation-for="Name" class="text-danger small"></span>
+            <h5 class="fw-bold text-dark mb-3 pb-2 border-bottom" style="font-size: 1.1rem;">Інформація про клуб</h5>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label fw-semibold text-secondary small">Назва команди</label>
+                    <input asp-for="Name" class="form-control rounded-3" placeholder="Введіть назву..." />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="SportCategory" class="form-label fw-semibold text-secondary small">Вид спорту</label>
+                    <select asp-for="SportCategory" id="teamSportSelect" class="form-select rounded-3" onchange="filterPlayersBySport()">
+                        <option value="">-- Виберіть вид спорту --</option>
+                        <option value="Футбол">Футбол</option>
+                        <option value="Баскетбол">Баскетбол</option>
+                        <option value="Волейбол">Волейбол</option>
+                        <option value="Хокей">Хокей</option>
+                    </select>
+                    <span asp-validation-for="SportCategory" class="text-danger small"></span>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="City" class="form-label fw-semibold">Місто</label>
-                <input asp-for="City" class="form-control" placeholder="Введіть місто..." />
-                <span asp-validation-for="City" class="text-danger small"></span>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="City" class="form-label fw-semibold text-secondary small">Місто</label>
+                    <input asp-for="City" class="form-control rounded-3" placeholder="Введіть місто..." />
+                    <span asp-validation-for="City" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CoachName" class="form-label fw-semibold text-secondary small">Тренер</label>
+                    <input asp-for="CoachName" class="form-control rounded-3" placeholder="Ім'я тренера..." />
+                    <span asp-validation-for="CoachName" class="text-danger small"></span>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="CoachName" class="form-label fw-semibold">Тренер</label>
-                <input asp-for="CoachName" class="form-control" placeholder="Ім'я тренера..." />
-                <span asp-validation-for="CoachName" class="text-danger small"></span>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="FoundedYear" class="form-label fw-semibold text-secondary small">Рік заснування</label>
+                    <input asp-for="FoundedYear" class="form-control rounded-3" type="number" placeholder="2020" />
+                    <span asp-validation-for="FoundedYear" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="HomeStadium" class="form-label fw-semibold text-secondary small">Домашній стадіон</label>
+                    <input asp-for="HomeStadium" class="form-control rounded-3" placeholder="Назва стадіону..." />
+                    <span asp-validation-for="HomeStadium" class="text-danger small"></span>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="FoundedYear" class="form-label fw-semibold">Рік заснування</label>
-                <input asp-for="FoundedYear" class="form-control" type="number" placeholder="2020" />
-                <span asp-validation-for="FoundedYear" class="text-danger small"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="HomeStadium" class="form-label fw-semibold">Домашній стадіон</label>
-                <input asp-for="HomeStadium" class="form-control" placeholder="Назва стадіону..." />
-                <span asp-validation-for="HomeStadium" class="text-danger small"></span>
-            </div>
+            <h5 class="fw-bold text-dark mb-3 pt-2 pb-2 border-bottom" style="font-size: 1.1rem;">Склад команди</h5>
 
             <div class="mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <label class="form-label fw-semibold m-0">Склад команди (виберіть гравців)</label>
-                    <a href="/Players/Create" target="_blank" class="text-decoration-none small text-primary">+ Створити нового гравця</a>
+                    <label class="form-label fw-semibold text-secondary small m-0">Виберіть гравців відповідного спорту</label>
+                    <a href="/Players/Create" target="_blank" class="text-decoration-none small fw-medium" style="color: #0c615a;">+ Створити нового гравця</a>
                 </div>
 
-                <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
-                    @if (ViewBag.AllPlayers != null && ((IEnumerable<SportsLeagueApp.Models.Player>)ViewBag.AllPlayers).Any())
+                <div class="border rounded-3 p-3 bg-light" style="max-height: 180px; overflow-y: auto;">
+                    @if (ViewBag.AllPlayers != null)
                     {
                         foreach (var player in ViewBag.AllPlayers)
                         {
                             bool isSelected = Model.Players != null && Model.Players.Any(p => p.Id == player.Id);
-                            <div class="form-check mb-2">
+                            <div class="form-check mb-2 player-checkbox-item" data-player-sport="@player.SportCategory">
                                 <input class="form-check-input" type="checkbox" name="selectedPlayers" value="@player.Id" id="player_@player.Id" @(isSelected ? "checked" : "")>
                                 <label class="form-check-label text-dark" for="player_@player.Id" style="cursor: pointer;">
-                                    @player.FirstName @player.LastName <span class="text-muted small">(@player.Position)</span>
+                                    @player.FirstName @player.LastName <span class="text-muted small">(@player.Position - <strong>@player.SportCategory</strong>)</span>
                                 </label>
                             </div>
                         }
                     }
-                    else
-                    {
-                        <div class="text-muted small text-center py-2">У системі ще немає гравців. Створіть їх у розділі "Гравці".</div>
-                    }
                 </div>
+                <small id="noPlayersWarning" class="text-muted mt-1 d-none">Оберіть вид спорту команди, щоб побачити доступних гравців.</small>
             </div>
 
-            <div class="d-flex align-items-center gap-3">
-                <input type="submit" value="Додати" class="btn btn-primary px-4 py-2" />
-                <a asp-action="CancelCreate" class="text-decoration-none text-secondary">Скасувати</a>
+            <div class="d-flex align-items-center justify-content-end gap-3 pt-3 border-top">
+                <a asp-action="CancelCreate" class="text-decoration-none text-secondary fw-medium">Скасувати</a>
+                <input type="submit" value="Зберегти команду" class="btn text-white px-4 py-2 rounded-3 fw-medium shadow-sm" style="background-color: #0c615a; border: none;" />
             </div>
         </form>
     </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<script>
+    function filterPlayersBySport() {
+        const selectedSport = document.getElementById('teamSportSelect').value;
+        const playerItems = document.querySelectorAll('.player-checkbox-item');
+        const warning = document.getElementById('noPlayersWarning');
+        let visibleCount = 0;
+
+        playerItems.forEach(item => {
+            const playerSport = item.getAttribute('data-player-sport');
+            if (!selectedSport) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else if (playerSport === selectedSport) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (checkbox) checkbox.checked = false;
+            }
+        });
+
+        if (!selectedSport) {
+            warning.textContent = "Будь ласка, оберіть вид спорту команди.";
+            warning.classList.remove('d-none');
+        } else if (visibleCount === 0) {
+            warning.textContent = "Немає гравців для цього виду спорту.";
+            warning.classList.remove('d-none');
+        } else {
+            warning.classList.add('d-none');
+        }
     }
+    document.addEventListener("DOMContentLoaded", filterPlayersBySport);
+</script>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

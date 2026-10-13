@@ -6,23 +6,27 @@
 
 <div class="container py-4" style="max-width: 700px;">
     <h1 class="fw-bold mb-3 text-danger" style="font-size: 2.2rem;">Видалити команду</h1>
-    <p class="text-secondary mb-4">Ви впевнені, що хочете видалити цей запис?</p>
+    <p class="text-secondary mb-4">Ви впевнені, що хочете назавжди видалити цей запис? Цю дію неможливо скасувати.</p>
 
-    <div class="card border rounded-3 p-4 shadow-none bg-white mb-4">
-        <dl class="row mb-0">
+    <div class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4">
+        <dl class="row mb-0" style="font-size: 1.05rem;">
             <dt class="col-sm-4 text-secondary mb-3">Назва:</dt>
             <dd class="col-sm-8 fw-medium mb-3">@Model.Name</dd>
+
+            <dt class="col-sm-4 text-secondary mb-3">Вид спорту:</dt>
+            <dd class="col-sm-8 fw-medium mb-3">@(string.IsNullOrEmpty(Model.SportCategory) ? "—" : Model.SportCategory)</dd>
 
             <dt class="col-sm-4 text-secondary mb-3">Місто:</dt>
             <dd class="col-sm-8 fw-medium mb-3">@Model.City</dd>
 
-            <dt class="col-sm-4 text-secondary mb-0">Тренер:</dt>
-            <dd class="col-sm-8 fw-medium mb-0">@Model.CoachName</dd>
+            <dt class="col-sm-4 text-secondary mb-3">Тренер:</dt>
+            <dd class="col-sm-8 fw-medium mb-3">@Model.CoachName</dd>
+            
             <dt class="col-sm-4 text-secondary mb-0">Склад команди:</dt>
             <dd class="col-sm-8 fw-medium mb-0">
                 @if (Model.Players != null && Model.Players.Any())
                 {
-                    @string.Join(", ", Model.Players.Select(p => p.LastName))
+                    <span class="badge bg-light text-dark border px-2 py-1">@Model.Players.Count гравців</span>
                 }
                 else
                 {
@@ -35,8 +39,8 @@
     <form asp-action="Delete" method="post">
         <input type="hidden" asp-for="Id" />
         <div class="d-flex align-items-center gap-3">
-            <input type="submit" value="Видалити" class="btn btn-danger px-4 py-2" />
-            <a asp-action="Index" class="text-decoration-none text-secondary">Скасувати</a>
+            <input type="submit" value="Видалити назавжди" class="btn btn-danger px-4 py-2 rounded-3 fw-medium" />
+            <a asp-action="Index" class="btn btn-light border text-secondary px-4 py-2 rounded-3 fw-medium">Скасувати</a>
         </div>
     </form>
 </div>

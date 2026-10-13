@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,12 +21,14 @@ namespace SportsLeagueApp.Controllers
             _context = context;
         }
 
+        // GET: Players
         public async Task<IActionResult> Index()
         {
             var players = await _context.Players.Include(p => p.Teams).ToListAsync();
             return View(players);
         }
 
+        // GET: Players/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -39,6 +43,7 @@ namespace SportsLeagueApp.Controllers
         }
 
         // GET: Players/Create
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult Create(bool restoreDraft = false)
         {
             string? jsonDraft = HttpContext.Session.GetString("PlayerCreateDraft");
@@ -56,6 +61,7 @@ namespace SportsLeagueApp.Controllers
                             FirstName = draftDto.FirstName,
                             LastName = draftDto.LastName,
                             DateOfBirth = draftDto.DateOfBirth,
+                            SportCategory = draftDto.SportCategory,
                             Position = draftDto.Position,
                             JerseyNumber = draftDto.JerseyNumber,
                             Teams = _context.Teams
@@ -77,23 +83,27 @@ namespace SportsLeagueApp.Controllers
         // POST: Players/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,DateOfBirth,Position,JerseyNumber")] Player player, int[] selectedTeams)
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,DateOfBirth,SportCategory,Position,JerseyNumber")] Player player, int[] selectedTeams)
         {
             var draftDto = new PlayerDraftDto
             {
                 FirstName = player.FirstName,
                 LastName = player.LastName,
                 DateOfBirth = player.DateOfBirth,
+                SportCategory = player.SportCategory,
                 Position = player.Position,
                 JerseyNumber = player.JerseyNumber,
-                SelectedTeamIds = selectedTeams ?? System.Array.Empty<int>()
+                SelectedTeamIds = selectedTeams ?? Array.Empty<int>()
             };
 
             HttpContext.Session.SetString("PlayerCreateDraft", JsonSerializer.Serialize(draftDto));
 
             if (selectedTeams != null && selectedTeams.Length > 0)
             {
-                player.Teams = _context.Teams.Where(t => selectedTeams.Contains(t.Id)).ToList();
+                player.Teams = _context.Teams
+                    .Where(t => selectedTeams.Contains(t.Id) && t.SportCategory == player.SportCategory)
+                    .ToList();
             }
 
             if (ModelState.IsValid)
@@ -109,6 +119,7 @@ namespace SportsLeagueApp.Controllers
             return View(player);
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult CancelCreate()
         {
             HttpContext.Session.Remove("PlayerCreateDraft");
@@ -116,6 +127,7 @@ namespace SportsLeagueApp.Controllers
         }
 
         // GET: Players/Edit/5
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Edit(int? id, bool restoreDraft = false)
         {
             if (id == null) return NotFound();
@@ -126,13 +138,13 @@ namespace SportsLeagueApp.Controllers
 
             if (playerFromDb == null) return NotFound();
 
-            // Зберігаємо початковий стан з БД у сесію
             var originalDto = new PlayerDraftDto
             {
                 Id = playerFromDb.Id,
                 FirstName = playerFromDb.FirstName,
                 LastName = playerFromDb.LastName,
                 DateOfBirth = playerFromDb.DateOfBirth,
+                SportCategory = playerFromDb.SportCategory,
                 Position = playerFromDb.Position,
                 JerseyNumber = playerFromDb.JerseyNumber,
                 SelectedTeamIds = playerFromDb.Teams.Select(t => t.Id).ToArray()
@@ -157,6 +169,7 @@ namespace SportsLeagueApp.Controllers
                             FirstName = draftDto.FirstName,
                             LastName = draftDto.LastName,
                             DateOfBirth = draftDto.DateOfBirth,
+                            SportCategory = draftDto.SportCategory,
                             Position = draftDto.Position,
                             JerseyNumber = draftDto.JerseyNumber,
                             Teams = _context.Teams
@@ -178,7 +191,8 @@ namespace SportsLeagueApp.Controllers
         // POST: Players/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,DateOfBirth,Position,JerseyNumber")] Player player, int[] selectedTeams)
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,DateOfBirth,SportCategory,Position,JerseyNumber")] Player player, int[] selectedTeams)
         {
             if (id != player.Id) return NotFound();
 
@@ -188,9 +202,10 @@ namespace SportsLeagueApp.Controllers
                 FirstName = player.FirstName,
                 LastName = player.LastName,
                 DateOfBirth = player.DateOfBirth,
+                SportCategory = player.SportCategory,
                 Position = player.Position,
                 JerseyNumber = player.JerseyNumber,
-                SelectedTeamIds = selectedTeams ?? System.Array.Empty<int>()
+                SelectedTeamIds = selectedTeams ?? Array.Empty<int>()
             };
 
             string draftKey = $"PlayerEditDraft_{id}";
@@ -198,7 +213,9 @@ namespace SportsLeagueApp.Controllers
 
             if (selectedTeams != null && selectedTeams.Length > 0)
             {
-                player.Teams = _context.Teams.Where(t => selectedTeams.Contains(t.Id)).ToList();
+                player.Teams = _context.Teams
+                    .Where(t => selectedTeams.Contains(t.Id) && t.SportCategory == player.SportCategory)
+                    .ToList();
             }
 
             if (ModelState.IsValid)
@@ -214,13 +231,17 @@ namespace SportsLeagueApp.Controllers
                     playerToUpdate.FirstName = player.FirstName;
                     playerToUpdate.LastName = player.LastName;
                     playerToUpdate.DateOfBirth = player.DateOfBirth;
+                    playerToUpdate.SportCategory = player.SportCategory;
                     playerToUpdate.Position = player.Position;
                     playerToUpdate.JerseyNumber = player.JerseyNumber;
 
                     playerToUpdate.Teams.Clear();
                     if (selectedTeams != null && selectedTeams.Length > 0)
                     {
-                        var newTeams = _context.Teams.Where(t => selectedTeams.Contains(t.Id)).ToList();
+                        var newTeams = _context.Teams
+                            .Where(t => selectedTeams.Contains(t.Id) && t.SportCategory == player.SportCategory)
+                            .ToList();
+
                         foreach (var team in newTeams)
                         {
                             playerToUpdate.Teams.Add(team);
@@ -245,6 +266,7 @@ namespace SportsLeagueApp.Controllers
             return View(player);
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult CancelEdit(int id)
         {
             HttpContext.Session.Remove($"PlayerEditDraft_{id}");
@@ -252,6 +274,8 @@ namespace SportsLeagueApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Players/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -265,8 +289,10 @@ namespace SportsLeagueApp.Controllers
             return View(player);
         }
 
+        // POST: Players/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var player = await _context.Players.FindAsync(id);

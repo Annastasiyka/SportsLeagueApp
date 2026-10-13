@@ -2,71 +2,321 @@
 
 @{
     ViewData["Title"] = "Гравці";
+    
+    var uniqueTeams = Model != null 
+        ? Model.Where(p => p.Teams != null && p.Teams.Any())
+               .SelectMany(p => p.Teams.Select(t => t.Name))
+               .Distinct()
+               .ToList()
+        : new List<string>();
+
+    var uniqueSports = Model != null 
+        ? Model.Where(p => !string.IsNullOrEmpty(p.SportCategory))
+               .Select(p => p.SportCategory)
+               .Distinct()
+               .ToList()
+        : new List<string>();
+
+    var totalPlayers = Model != null ? Model.Count() : 0;
+    
+    string[] bgColors = { "#d1fae5", "#dbeafe", "#fef3c7", "#f3e8ff", "#f1f5f9", "#ffedd5" };
+    string[] textColors = { "#059669", "#2563eb", "#d97706", "#9333ea", "#475569", "#ea580c" };
 }
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="fw-bold m-0" style="font-size: 2.5rem;">Гравці</h1>
-        <a asp-action="Create" class="btn btn-primary px-4 py-2">Додати гравця</a>
-    </div>
+<div class="mb-4">
+    <a href="/Home" class="btn bg-white border text-decoration-none d-inline-flex align-items-center px-4 py-2 fw-medium rounded-3 back-btn" style="color: #64748b; border-color: #e2e8f0 !important; font-size: 1.05rem;">
+        <span class="me-2" style="font-weight: 300;">&larr;</span> Повернутись на головну
+    </a>
+</div>
 
-    <div class="table-responsive border rounded-3 bg-white mb-4">
-        <table class="table table-bordered mb-0 align-middle text-center">
-            <thead class="table-light border-bottom">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-bold m-0" style="color: #111827; font-size: 2.2rem;">Гравці</h1>
+        <p class="text-secondary m-0 mt-1">Керування гравцями ліги</p>
+    </div>
+    
+    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+    {
+        <a asp-action="Create" class="btn text-white px-4 py-2 rounded-3 fw-medium shadow-sm btn-success-custom">
+            <i class="bi bi-plus-lg me-1"></i> Додати гравця
+        </a>
+    }
+</div>
+
+<div class="card border-0 rounded-4 shadow-sm bg-white p-3 mb-4">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+        <div class="input-group border rounded-3" style="max-width: 280px; background-color: #f8fafc;">
+            <span class="input-group-text bg-transparent border-0 text-muted px-3"><i class="bi bi-search"></i></span>
+            <input type="text" id="searchInput" class="form-control bg-transparent border-0 ps-0 shadow-none" placeholder="Ім'я або прізвище...">
+        </div>
+        
+        <select id="teamFilter" class="form-select border rounded-3 text-dark fw-medium shadow-none" style="max-width: 200px; background-color: #f8fafc; cursor: pointer;">
+            <option value="all">Усі команди</option>
+            <option value="Без команди">Без команди</option>
+            @foreach (var team in uniqueTeams) { <option value="@team">@team</option> }
+        </select>
+
+        <select id="sportFilter" class="form-select border rounded-3 text-dark fw-medium shadow-none" style="max-width: 200px; background-color: #f8fafc; cursor: pointer;">
+            <option value="all">Усі види спорту</option>
+            @foreach (var sport in uniqueSports) { <option value="@sport">@sport</option> }
+        </select>
+
+        <div class="ms-auto text-secondary fw-medium" style="font-size: 0.95rem;">
+            <span id="playersCount" style="color: #64748b;">@totalPlayers</span> <span style="color: #64748b;">гравців</span>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 rounded-4 shadow-sm bg-white overflow-hidden mb-4">
+    <div class="table-responsive p-2">
+        <table class="table align-middle mb-0 border-0 table-hover">
+            <thead style="background-color: #ffffff;">
                 <tr>
-                    <th class="py-3 px-4 fw-semibold text-dark">Ім'я та прізвище</th>
-                    <th class="py-3 px-4 fw-semibold text-dark">Позиція</th>
-                    <th class="py-3 px-4 fw-semibold text-dark">Номер</th>
-                    <th class="py-3 px-4 fw-semibold text-dark">Дата народження</th>
-                    <th class="py-3 px-4 fw-semibold text-dark">Поточна команда</th>
-                    <th class="py-3 px-4 fw-semibold text-dark text-center">Дії</th>
+                    <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0">Гравець</th>
+                    <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0">Поточна команда</th>
+                    <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Спорт</th>
+                    <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Позиція</th>
+                    <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Номер</th>
+                    <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Вік</th>
+                    <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Статус</th>
+                    
+                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                    {
+                        <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Дії</th>
+                    }
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="players-table-body">
                 @if (Model != null && Model.Any())
                 {
                     foreach (var item in Model)
                     {
-                        <tr>
-                            <td class="py-3 px-4 fw-medium">@item.FirstName @item.LastName</td>
-                            <td class="py-3 px-4">@item.Position</td>
-                            <td class="py-3 px-4">@item.JerseyNumber</td>
-                            <td class="py-3 px-4">@item.DateOfBirth?.ToString("dd.MM.yyyy")</td>
-                            <td class="py-3 px-4">
-                                @if (item.Teams != null && item.Teams.Any())
+                        string ageDisplay = "—";
+                        if (item.DateOfBirth.HasValue)
+                        {
+                            var today = DateTime.Today;
+                            var age = today.Year - item.DateOfBirth.Value.Year;
+                            if (item.DateOfBirth.Value.Date > today.AddYears(-age)) age--;
+                            ageDisplay = age.ToString();
+                        }
+
+                        string teamNames = (item.Teams != null && item.Teams.Any()) 
+                            ? string.Join(", ", item.Teams.Select(t => t.Name)) 
+                            : "Без команди";
+                        
+                        bool isActive = teamNames != "Без команди";
+
+                        string firstLetter = string.IsNullOrEmpty(item.FirstName) ? "" : item.FirstName.Substring(0, 1).ToUpper();
+                        string lastLetter = string.IsNullOrEmpty(item.LastName) ? "" : item.LastName.Substring(0, 1).ToUpper();
+                        string initials = firstLetter + lastLetter;
+                        
+                        int colorIdx = item.Id % bgColors.Length;
+
+                        <tr class="player-row border-top" style="cursor: pointer;" 
+                            data-name="@((item.FirstName + " " + item.LastName).ToLower())" 
+                            data-team="@teamNames"
+                            data-sport="@(item.SportCategory ?? "")"
+                            onclick="goToDetails(event, '/Players/Details/@item.Id')">
+                            
+                            <!-- Гравець з аватаркою -->
+                            <td class="py-3 px-4 border-light">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle me-3 d-flex justify-content-center align-items-center fw-bold" 
+                                         style="width: 40px; height: 40px; background-color: @bgColors[colorIdx]; color: @textColors[colorIdx]; font-size: 0.95rem;">
+                                        @initials
+                                    </div>
+                                    <span class="fw-medium text-dark" style="font-size: 1.05rem;">@item.FirstName @item.LastName</span>
+                                </div>
+                            </td>
+                            
+                            <!-- Команда -->
+                            <td class="py-3 px-4 border-light text-secondary">
+                                @if(isActive) { <span class="fw-medium text-dark">@teamNames</span> }
+                                else { <span class="text-muted">@teamNames</span> }
+                            </td>
+
+                            <!-- Спорт -->
+                            <td class="py-3 px-4 border-light text-secondary text-center">@(string.IsNullOrEmpty(item.SportCategory) ? "—" : item.SportCategory)</td>
+                            
+                            <!-- Позиція, номер, вік -->
+                            <td class="py-3 px-4 border-light text-secondary text-center">@(string.IsNullOrEmpty(item.Position) ? "—" : item.Position)</td>
+                            <td class="py-3 px-4 border-light text-secondary text-center">@(item.JerseyNumber > 0 ? item.JerseyNumber.ToString() : "—")</td>
+                            <td class="py-3 px-4 border-light text-secondary text-center">@ageDisplay</td>
+                            
+                            <!-- Статус -->
+                            <td class="py-3 px-4 border-light text-center">
+                                @if (isActive)
                                 {
-                                    @string.Join(", ", item.Teams.Select(t => t.Name))
+                                    <span class="badge rounded-pill px-3 py-1 fw-medium" style="background-color: #d1fae5; color: #059669; border: 1px solid #a7f3d0;">Активний</span>
                                 }
                                 else
                                 {
-                                    <span class="text-muted small">—</span>
+                                    <span class="badge rounded-pill px-3 py-1 fw-medium" style="background-color: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;">Вільний</span>
                                 }
                             </td>
-                            <td class="py-3 px-4 text-center">
-                                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-dark me-2">Деталі</a> |
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none text-dark mx-2">Редагувати</a> |
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none text-danger ms-2">Видалити</a>
-                            </td>
+                            
+                            <!-- Кнопки дій бачать лише Admin та Manager -->
+                            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                            {
+                                <td class="py-3 px-4 border-light text-center">
+                                    <div class="d-flex justify-content-center align-items-center gap-4">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="text-primary text-decoration-none action-btn" title="Редагувати">
+                                            <i class="bi bi-pencil" style="font-size: 1.3rem;"></i>
+                                        </a>
+                                        
+                                        <!-- Видаляти може ТІЛЬКИ Admin -->
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger text-decoration-none action-btn" title="Видалити">
+                                                <i class="bi bi-trash3" style="font-size: 1.3rem;"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            }
                         </tr>
                     }
                 }
                 else
                 {
                     <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">Ще немає доданих гравців.</td>
+                        <!-- Динамічна ширина колонки -->
+                        <td colspan="@(User.IsInRole("Admin") || User.IsInRole("Manager") ? "8" : "7")" class="text-center py-5 text-muted">Ще немає доданих гравців.</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
-    <div>
-        <a href="/Home" class="text-decoration-none text-dark fw-medium">&larr; На головну</a>
+    <!-- Пагінація та вибір кількості елементів -->
+    <div class="d-flex justify-content-between align-items-center p-3 border-top bg-white">
+        <div class="d-flex align-items-center gap-2">
+            <select id="pageSize" class="form-select form-select-sm border rounded-3 shadow-none fw-medium text-dark" style="width: 75px; cursor: pointer;">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+            <span class="text-secondary small">на сторінці</span>
+        </div>
+        <div id="pagination-controls" class="d-flex gap-1"></div>
     </div>
 </div>
 
-<style>
-    tbody tr:hover {
-        background-color: #f8f9fa;
+<!-- JS для фільтрації за спортом, пагінації та кліків по рядках -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById('searchInput');
+        const teamFilter = document.getElementById('teamFilter');
+        const sportFilter = document.getElementById('sportFilter');
+        const pageSizeSelect = document.getElementById('pageSize');
+        const countDisplay = document.getElementById('playersCount');
+        const allRows = Array.from(document.querySelectorAll('.player-row'));
+        
+        let currentPage = 1;
+        let pageSize = parseInt(pageSizeSelect.value);
+        let filteredRows = allRows;
+
+        function updateTable() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const selectedTeam = teamFilter.value;
+            const selectedSport = sportFilter.value;
+
+            // 1. Фільтруємо рядки за ім'ям, командою та спортом
+            filteredRows = allRows.filter(row => {
+                const rowSearch = row.getAttribute('data-name');
+                const rowTeam = row.getAttribute('data-team');
+                const rowSport = row.getAttribute('data-sport');
+
+                const matchesSearch = rowSearch.includes(searchTerm);
+                const matchesTeam = (selectedTeam === 'all' || rowTeam.includes(selectedTeam));
+                const matchesSport = (selectedSport === 'all' || rowSport === selectedSport);
+
+                return matchesSearch && matchesTeam && matchesSport;
+            });
+
+            // 2. Рахуємо сторінки
+            const totalPages = Math.ceil(filteredRows.length / pageSize) || 1;
+            if (currentPage > totalPages) currentPage = 1;
+
+            // 3. Відображення рядків для поточної сторінки
+            allRows.forEach(row => row.style.display = 'none');
+            
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            filteredRows.slice(startIndex, endIndex).forEach(row => row.style.display = '');
+
+            countDisplay.textContent = filteredRows.length;
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            const container = document.getElementById('pagination-controls');
+            container.innerHTML = '';
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `btn btn-sm border bg-white ${currentPage === 1 ? 'text-muted disabled' : 'text-dark'}`;
+            prevBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
+            prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; updateTable(); } };
+            container.appendChild(prevBtn);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                if (i === currentPage) {
+                    pageBtn.className = 'btn btn-sm fw-bold border text-success bg-white px-3';
+                    pageBtn.style.borderColor = '#198754';
+                } else {
+                    pageBtn.className = 'btn btn-sm border bg-white text-secondary px-3';
+                }
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => { currentPage = i; updateTable(); };
+                container.appendChild(pageBtn);
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `btn btn-sm border bg-white ${currentPage === totalPages ? 'text-muted disabled' : 'text-dark'}`;
+            nextBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+            nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; updateTable(); } };
+            container.appendChild(nextBtn);
+        }
+
+        searchInput.addEventListener('input', updateTable);
+        teamFilter.addEventListener('change', updateTable);
+        sportFilter.addEventListener('change', updateTable);
+        pageSizeSelect.addEventListener('change', function() {
+            pageSize = parseInt(this.value);
+            currentPage = 1;
+            updateTable();
+        });
+
+        updateTable(); 
+    });
+
+    // Функція для клікабельних рядків
+    function goToDetails(event, url) {
+        if (event.target.closest('a.action-btn')) {
+            return;
+        }
+        window.location.href = url;
     }
+</script>
+
+<style>
+    .table tbody tr:hover { background-color: #f8fafc; }
+    
+    .action-btn { transition: transform 0.2s ease, opacity 0.2s; opacity: 0.8; }
+    .action-btn:hover { transform: scale(1.2); opacity: 1; }
+    
+    .back-btn { transition: background-color 0.2s, box-shadow 0.2s; }
+    .back-btn:hover { background-color: #f8fafc !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    
+    .btn-success-custom { 
+        background-color: #0c615a; 
+        border: none; 
+        transition: background-color 0.2s;
+    }
+    .btn-success-custom:hover { background-color: #094742; color: #ffffff;}
+    
+    .input-group:focus-within { border-color: #cbd5e1 !important; }
+    .form-select:focus { border-color: #cbd5e1 !important; box-shadow: none; }
 </style>

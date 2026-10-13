@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema; 
 
 namespace SportsLeagueApp.Models
 {
     public class Player
     {
         public int Id { get; set; }
+        public string? PhotoUrl { get; set; }
 
         private string? _firstName;
         [Required(ErrorMessage = "Заповніть інформацію про ім'я")]
@@ -28,6 +30,19 @@ namespace SportsLeagueApp.Models
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
 
+        [NotMapped]
+        public int Age
+        {
+            get
+            {
+                if (!DateOfBirth.HasValue) return 0;
+                var today = DateTime.Today;
+                var age = today.Year - DateOfBirth.Value.Year;
+                if (DateOfBirth.Value.Date > today.AddYears(-age)) age--;
+                return age;
+            }
+        }
+
         private string? _position;
         [Required(ErrorMessage = "Заповніть інформацію про позицію")]
         public string? Position
@@ -39,6 +54,9 @@ namespace SportsLeagueApp.Models
         [Required(ErrorMessage = "Вкажіть ігровий номер")]
         [Range(0, 99, ErrorMessage = "Ігровий номер має бути від 0 до 99")]
         public int? JerseyNumber { get; set; }
+
+        [Required(ErrorMessage = "Вкажіть вид спорту")]
+        public string? SportCategory { get; set; }
 
         public List<Team> Teams { get; set; } = new List<Team>();
 

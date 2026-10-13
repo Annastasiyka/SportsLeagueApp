@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,12 +21,14 @@ namespace SportsLeagueApp.Controllers
             _context = context;
         }
 
+        // GET: Teams
         public async Task<IActionResult> Index()
         {
             var teams = await _context.Teams.Include(t => t.Players).ToListAsync();
             return View(teams);
         }
 
+        // GET: Teams/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -39,6 +43,7 @@ namespace SportsLeagueApp.Controllers
         }
 
         // GET: Teams/Create
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult Create(bool restoreDraft = false)
         {
             string? jsonDraft = HttpContext.Session.GetString("TeamCreateDraft");
@@ -54,6 +59,7 @@ namespace SportsLeagueApp.Controllers
                         teamToDisplay = new Team
                         {
                             Name = draftDto.Name,
+                            SportCategory = draftDto.SportCategory,
                             City = draftDto.City,
                             CoachName = draftDto.CoachName,
                             FoundedYear = draftDto.FoundedYear,
@@ -77,33 +83,34 @@ namespace SportsLeagueApp.Controllers
         // POST: Teams/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,City,FoundedYear,CoachName,HomeStadium")] Team team, int[] selectedPlayers)
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> Create([Bind("Id,Name,SportCategory,City,FoundedYear,CoachName,HomeStadium")] Team team, int[] selectedPlayers)
         {
-            // Пакуємо введені дані в DTO та зберігаємо у сесію
             var draftDto = new TeamDraftDto
             {
                 Name = team.Name,
+                SportCategory = team.SportCategory,
                 City = team.City,
                 CoachName = team.CoachName,
                 FoundedYear = team.FoundedYear,
                 HomeStadium = team.HomeStadium,
-                SelectedPlayerIds = selectedPlayers ?? System.Array.Empty<int>()
+                SelectedPlayerIds = selectedPlayers ?? Array.Empty<int>()
             };
 
             HttpContext.Session.SetString("TeamCreateDraft", JsonSerializer.Serialize(draftDto));
 
             if (selectedPlayers != null && selectedPlayers.Length > 0)
             {
-                team.Players = _context.Players.Where(p => selectedPlayers.Contains(p.Id)).ToList();
+                team.Players = _context.Players
+                    .Where(p => selectedPlayers.Contains(p.Id) && p.SportCategory == team.SportCategory)
+                    .ToList();
             }
 
-            // Валідація даних на рівні моделі 
             if (ModelState.IsValid)
             {
                 _context.Add(team);
                 await _context.SaveChangesAsync();
 
-                // Очищаємо сесію після успішного збереження
                 HttpContext.Session.Remove("TeamCreateDraft");
                 return RedirectToAction(nameof(Index));
             }
@@ -112,6 +119,7 @@ namespace SportsLeagueApp.Controllers
             return View(team);
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult CancelCreate()
         {
             HttpContext.Session.Remove("TeamCreateDraft");
@@ -119,6 +127,7 @@ namespace SportsLeagueApp.Controllers
         }
 
         // GET: Teams/Edit/5
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Edit(int? id, bool restoreDraft = false)
         {
             if (id == null) return NotFound();
@@ -129,11 +138,11 @@ namespace SportsLeagueApp.Controllers
 
             if (teamFromDb == null) return NotFound();
 
-            // Зберігаємо початкові дані з БД у сесію
             var originalDto = new TeamDraftDto
             {
                 Id = teamFromDb.Id,
                 Name = teamFromDb.Name,
+                SportCategory = teamFromDb.SportCategory,
                 City = teamFromDb.City,
                 CoachName = teamFromDb.CoachName,
                 FoundedYear = teamFromDb.FoundedYear,
@@ -158,6 +167,7 @@ namespace SportsLeagueApp.Controllers
                         {
                             Id = teamFromDb.Id,
                             Name = draftDto.Name,
+                            SportCategory = draftDto.SportCategory,
                             City = draftDto.City,
                             CoachName = draftDto.CoachName,
                             FoundedYear = draftDto.FoundedYear,
@@ -181,32 +191,33 @@ namespace SportsLeagueApp.Controllers
         // POST: Teams/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,City,FoundedYear,CoachName,HomeStadium")] Team team, int[] selectedPlayers)
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,SportCategory,City,FoundedYear,CoachName,HomeStadium")] Team team, int[] selectedPlayers)
         {
             if (id != team.Id) return NotFound();
 
-            // Пакуємо введені дані в DTO і зберігаємо у сесію 
             var draftDto = new TeamDraftDto
             {
                 Id = team.Id,
                 Name = team.Name,
+                SportCategory = team.SportCategory,
                 City = team.City,
                 CoachName = team.CoachName,
                 FoundedYear = team.FoundedYear,
                 HomeStadium = team.HomeStadium,
-                SelectedPlayerIds = selectedPlayers ?? System.Array.Empty<int>()
+                SelectedPlayerIds = selectedPlayers ?? Array.Empty<int>()
             };
 
             string draftKey = $"TeamEditDraft_{id}";
             HttpContext.Session.SetString(draftKey, JsonSerializer.Serialize(draftDto));
 
-            // Зберігаємо вибір чекбоксів для форми при помилках валідації
             if (selectedPlayers != null && selectedPlayers.Length > 0)
             {
-                team.Players = _context.Players.Where(p => selectedPlayers.Contains(p.Id)).ToList();
+                team.Players = _context.Players
+                    .Where(p => selectedPlayers.Contains(p.Id) && p.SportCategory == team.SportCategory)
+                    .ToList();
             }
 
-            // Перевірка валідації
             if (ModelState.IsValid)
             {
                 try
@@ -218,6 +229,7 @@ namespace SportsLeagueApp.Controllers
                     if (teamToUpdate == null) return NotFound();
 
                     teamToUpdate.Name = team.Name;
+                    teamToUpdate.SportCategory = team.SportCategory;
                     teamToUpdate.City = team.City;
                     teamToUpdate.FoundedYear = team.FoundedYear;
                     teamToUpdate.CoachName = team.CoachName;
@@ -226,18 +238,19 @@ namespace SportsLeagueApp.Controllers
                     teamToUpdate.Players.Clear();
                     if (selectedPlayers != null && selectedPlayers.Length > 0)
                     {
-                        var newPlayers = _context.Players.Where(p => selectedPlayers.Contains(p.Id)).ToList();
+                        var newPlayers = _context.Players
+                            .Where(p => selectedPlayers.Contains(p.Id) && p.SportCategory == team.SportCategory)
+                            .ToList();
+
                         foreach (var player in newPlayers)
                         {
                             teamToUpdate.Players.Add(player);
                         }
                     }
 
-                    // Запис оновлених даних в базу лише після натискання кнопки "Зберегти" (Вимога 1)
                     _context.Update(teamToUpdate);
                     await _context.SaveChangesAsync();
 
-                    // Очистка сесії після успішного запису (Вимога 3)
                     HttpContext.Session.Remove(draftKey);
                     HttpContext.Session.Remove($"TeamOriginal_{id}");
                 }
@@ -253,6 +266,7 @@ namespace SportsLeagueApp.Controllers
             return View(team);
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult CancelEdit(int id)
         {
             HttpContext.Session.Remove($"TeamEditDraft_{id}");
@@ -260,6 +274,8 @@ namespace SportsLeagueApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Teams/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -273,8 +289,10 @@ namespace SportsLeagueApp.Controllers
             return View(team);
         }
 
+        // POST: Teams/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var team = await _context.Teams.FindAsync(id);

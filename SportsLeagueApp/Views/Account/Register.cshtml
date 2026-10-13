@@ -1,0 +1,48 @@
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Реєстрація";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 p-4">
+                <div class="card-body">
+                    <h2 class="text-center fw-bold mb-4" style="color: #1a233a;">Реєстрація</h2>
+                    
+                    <form asp-controller="Account" asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label text-muted fw-medium">Електронна пошта</label>
+                            <input asp-for="Email" class="form-control form-control-lg bg-light border-0" placeholder="name@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label text-muted fw-medium">Пароль</label>
+                            <input asp-for="Password" class="form-control form-control-lg bg-light border-0" placeholder="Створіть пароль" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="ConfirmPassword" class="form-label text-muted fw-medium">Підтвердження пароля</label>
+                            <input asp-for="ConfirmPassword" class="form-control form-control-lg bg-light border-0" placeholder="Повторіть пароль" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-register w-100 py-2 fs-5 rounded-3 mb-3">Зареєструватися</button>
+                        
+                        <div class="text-center">
+                            <a asp-action="Login" class="text-decoration-none" style="color: #0f766e;">Вже є акаунт? Увійти</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

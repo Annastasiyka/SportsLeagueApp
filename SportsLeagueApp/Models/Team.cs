@@ -4,6 +4,7 @@ namespace SportsLeagueApp.Models
 {
     public class Team
     {
+        public string? LogoUrl { get; set; }
         public int Id { get; set; }
 
         private string? _name;
@@ -13,6 +14,9 @@ namespace SportsLeagueApp.Models
             get => _name;
             set => _name = CapitalizeFirst(value);
         }
+
+        [Required(ErrorMessage = "Вид спорту є обов'язковим")]
+        public string? SportCategory { get; set; }
 
         private string? _city;
         [Required(ErrorMessage = "Заповніть інформацію про місто")]

@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Видалити гравця";
 }
+
 <div class="container py-4" style="max-width: 700px;">
     <h1 class="fw-bold mb-3 text-danger" style="font-size: 2.2rem;">Видалити гравця</h1>
     <p class="text-secondary mb-4">Ви впевнені, що хочете видалити цього гравця?</p>
@@ -11,6 +12,9 @@
         <dl class="row mb-0">
             <dt class="col-sm-4 text-secondary mb-3">ПІБ:</dt>
             <dd class="col-sm-8 fw-medium mb-3">@Model.FirstName @Model.LastName</dd>
+
+            <dt class="col-sm-4 text-secondary mb-3">Вид спорту:</dt>
+            <dd class="col-sm-8 fw-medium mb-3">@(string.IsNullOrEmpty(Model.SportCategory) ? "—" : Model.SportCategory)</dd>
 
             <dt class="col-sm-4 text-secondary mb-3">Позиція:</dt>
             <dd class="col-sm-8 fw-medium mb-3">@Model.Position</dd>

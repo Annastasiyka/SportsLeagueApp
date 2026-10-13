@@ -2,38 +2,76 @@
 
 @{
     ViewData["Title"] = "Деталі гравця";
+
+    string ageDisplay = "—";
+    if (Model.DateOfBirth.HasValue)
+    {
+        var today = DateTime.Today;
+        var age = today.Year - Model.DateOfBirth.Value.Year;
+        if (Model.DateOfBirth.Value.Date > today.AddYears(-age)) age--;
+        ageDisplay = age.ToString();
+    }
+
+    string firstLetter = string.IsNullOrEmpty(Model.FirstName) ? "" : Model.FirstName.Substring(0, 1).ToUpper();
+    string lastLetter = string.IsNullOrEmpty(Model.LastName) ? "" : Model.LastName.Substring(0, 1).ToUpper();
+    string initials = firstLetter + lastLetter;
 }
 
 <div class="container py-4" style="max-width: 700px;">
-    <h1 class="fw-bold mb-4" style="font-size: 2.2rem;">@Model.FirstName @Model.LastName</h1>
+    <div class="mb-4">
+        <a href="/Players" class="btn bg-white border text-decoration-none d-inline-flex align-items-center px-4 py-2 fw-medium rounded-3 back-btn" style="color: #64748b; border-color: #e2e8f0 !important; font-size: 1.05rem;">
+            <span class="me-2" style="font-weight: 300;">&larr;</span> Назад до гравців
+        </a>
+    </div>
 
-    <div class="card border rounded-3 p-4 shadow-none bg-white mb-4">
-        <dl class="row mb-0">
-            <dt class="col-sm-4 text-secondary mb-3">Позиція:</dt>
-            <dd class="col-sm-8 fw-medium mb-3">@Model.Position</dd>
+    <div class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4">
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+            <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold text-white shadow-sm me-4" 
+                 style="width: 80px; height: 80px; background-color: #0f766e; font-size: 2rem;">
+                @initials
+            </div>
+            <div>
+                <h1 class="fw-bold m-0" style="color: #111827; font-size: 2.2rem;">@Model.FirstName @Model.LastName</h1>
+                <div class="text-secondary mt-2">
+                    <span class="badge rounded-pill px-3 py-1 fw-medium me-2" style="background-color: #f0f6ff; color: #1a56db; border: 1px solid #dbeafe;">@Model.Position</span>
+                    <span class="badge rounded-pill px-3 py-1 fw-medium" style="background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0;">№ @(Model.JerseyNumber > 0 ? Model.JerseyNumber.ToString() : "—")</span>
+                </div>
+            </div>
+        </div>
 
-            <dt class="col-sm-4 text-secondary mb-3">Ігровий номер:</dt>
-            <dd class="col-sm-8 fw-medium mb-3">@Model.JerseyNumber</dd>
+        <dl class="row mb-0" style="font-size: 1.05rem;">
+            <dt class="col-sm-4 text-secondary mb-3">Вид спорту:</dt>
+            <dd class="col-sm-8 fw-medium mb-3">@(string.IsNullOrEmpty(Model.SportCategory) ? "—" : Model.SportCategory)</dd>
 
-            <dt class="col-sm-4 text-secondary mb-3">Дата народження:</dt>
-            <dd class="col-sm-8 fw-medium mb-3">@Model.DateOfBirth?.ToString("dd.MM.yyyy")</dd>
+            <dt class="col-sm-4 text-secondary mb-3">Вік:</dt>
+            <dd class="col-sm-8 fw-medium mb-3">@ageDisplay років <span class="text-muted small fw-normal">(@Model.DateOfBirth?.ToString("dd.MM.yyyy"))</span></dd>
 
-            <dt class="col-sm-4 text-secondary mb-0">Команди:</dt>
+            <dt class="col-sm-4 text-secondary mb-0">Поточні команди:</dt>
             <dd class="col-sm-8 fw-medium mb-0">
                 @if (Model.Teams != null && Model.Teams.Any())
                 {
-                    @string.Join(", ", Model.Teams.Select(t => t.Name))
+                    foreach (var team in Model.Teams)
+                    {
+                        <span class="d-inline-block bg-light border rounded-2 px-2 py-1 me-2 mb-1">@team.Name</span>
+                    }
                 }
                 else
                 {
-                    <span class="text-muted">Вільний агент (немає команд)</span>
+                    <span class="badge rounded-pill px-3 py-1 fw-medium" style="background-color: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;">Вільний агент</span>
                 }
             </dd>
         </dl>
     </div>
 
     <div class="d-flex align-items-center gap-3">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary px-4 py-2">Редагувати</a>
-        <a asp-action="Index" class="text-decoration-none text-secondary">Назад до списку</a>
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn text-white px-4 py-2 rounded-3 fw-medium" style="background-color: #0f766e; border: none;">Редагувати</a>
+        }
     </div>
 </div>
+
+<style>
+    .back-btn { transition: background-color 0.2s, box-shadow 0.2s; }
+    .back-btn:hover { background-color: #f8fafc !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+</style>
