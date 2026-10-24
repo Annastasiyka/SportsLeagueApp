@@ -3,19 +3,46 @@
     ViewData["Title"] = "Управління користувачами";
 }
 
-<div class="container mt-4 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold m-0" style="color: #111827;">Управління користувачами</h2>
+<div class="container py-5" style="max-width: 1050px;">
+    <h2 class="fw-bold mb-4" style="color: #111827;">Панель адміністратора</h2>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger rounded-3 shadow-sm mb-4">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-3 shadow-sm mb-4">@TempData["Success"]</div>
+    }
+
+    <div class="card border-0 rounded-4 shadow-sm mb-5 bg-white">
+        <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
+            <div class="d-flex align-items-center w-100">
+                <div class="rounded-circle d-flex justify-content-center align-items-center me-3 flex-shrink-0" style="width: 60px; height: 60px; background-color: #f1f5f9;">
+                    <i class="bi bi-chat-left-dots-fill fs-3" style="color: #0f766e;"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold mb-1" style="color: #111827;">Модерація чатів</h4>
+                    <p class="text-muted small mb-0" style="font-size: 0.95rem;">
+                        Перегляд і схвалення нових заявок, а також керування правами поточних учасників командних чатів.
+                    </p>
+                </div>
+            </div>
+            <a asp-action="ChatAccessRequests" class="btn btn-dark rounded-3 px-4 py-3 fw-medium shadow-sm d-flex align-items-center flex-shrink-0" style="white-space: nowrap;">
+                <i class="bi bi-sliders me-2"></i> Керувати доступами
+            </a>
+        </div>
     </div>
 
+    <h4 class="fw-bold mb-3" style="color: #111827;">Управління користувачами та ролями</h4>
     <div class="card border-0 rounded-4 shadow-sm bg-white overflow-hidden p-2">
         <div class="table-responsive">
             <table class="table align-middle mb-0 border-0 table-hover">
                 <thead style="background-color: #ffffff;">
                     <tr>
                         <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0">Користувач (Email)</th>
-                        <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0">Поточні ролі</th>
-                        <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Дії</th>
+                        <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Поточні ролі</th>
+                        <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-end">Дії</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,13 +53,13 @@
                             <tr class="border-top">
                                 <td class="py-3 px-4 border-light">
                                     <div class="d-flex align-items-center">
-                                        <div class="rounded-circle me-3 d-flex justify-content-center align-items-center bg-light text-secondary shadow-sm" style="width: 40px; height: 40px;">
+                                        <div class="rounded-circle me-3 d-flex justify-content-center align-items-center bg-light text-secondary shadow-sm flex-shrink-0" style="width: 40px; height: 40px;">
                                             <i class="bi bi-person-fill fs-5"></i>
                                         </div>
-                                        <span class="fw-medium text-dark">@user.Email</span>
+                                        <span class="fw-medium text-dark text-break">@user.Email</span>
                                     </div>
                                 </td>
-                                <td class="py-3 px-4 border-light">
+                                <td class="py-3 px-4 border-light text-center">
                                     @if (user.Roles.Any())
                                     {
                                         foreach(var role in user.Roles)
@@ -46,10 +73,30 @@
                                         <span class="text-muted small">Немає ролей</span>
                                     }
                                 </td>
-                                <td class="py-3 px-4 border-light text-center">
-                                    <a asp-action="ManageRoles" asp-route-userId="@user.UserId" class="btn btn-sm btn-outline-primary rounded-3 px-3 py-2">
-                                        <i class="bi bi-person-gear me-1"></i> Редагувати
-                                    </a>
+                                <td class="py-3 px-4 border-light text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <!-- Кнопка редагування ролей -->
+                                        <a asp-action="ManageRoles" asp-route-userId="@user.UserId" class="btn btn-sm btn-outline-primary rounded-3 px-3 py-2 d-inline-flex align-items-center">
+                                            <i class="bi bi-person-gear me-1"></i> Редагувати
+                                        </a>
+                                        
+                                        <!-- Логіка для кнопки видалення -->
+                                        @if (user.Email?.ToLower() != "admin@league.com")
+                                        {
+                                            <form asp-action="DeleteUser" asp-route-id="@user.UserId" method="post" onsubmit="return confirm('Ви впевнені, що хочете видалити цього користувача назавжди? Відмінити цю дію неможливо!');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-3 px-2 py-2 d-inline-flex align-items-center" title="Видалити акаунт">
+                                                    <i class="bi bi-trash3 fs-6"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <!-- Для головного адміна кнопка видалення заблокована і сіра (для симетрії таблиці) -->
+                                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-3 px-2 py-2 d-inline-flex align-items-center" disabled title="Головного адміністратора неможливо видалити" style="opacity: 0.4;">
+                                                <i class="bi bi-trash3 fs-6"></i>
+                                            </button>
+                                        }
+                                    </div>
                                 </td>
                             </tr>
                         }

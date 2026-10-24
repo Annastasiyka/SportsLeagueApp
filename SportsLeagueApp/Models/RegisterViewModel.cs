@@ -4,9 +4,12 @@ namespace SportsLeagueApp.Models
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "Заповніть електронну пошту")]
-        [EmailAddress(ErrorMessage = "Некоректний формат email")]
-        [Display(Name = "Електронна пошта")]
+        [Required(ErrorMessage = "Введіть ім'я та прізвище")]
+        [Display(Name = "Ім'я та прізвище")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Введіть електронну пошту")]
+        [EmailAddress(ErrorMessage = "Некоректний формат пошти")]
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Введіть пароль")]
@@ -14,7 +17,6 @@ namespace SportsLeagueApp.Models
         [Display(Name = "Пароль")]
         public string Password { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Підтвердіть пароль")]
         [DataType(DataType.Password)]
         [Display(Name = "Підтвердження пароля")]
         [Compare("Password", ErrorMessage = "Паролі не збігаються")]

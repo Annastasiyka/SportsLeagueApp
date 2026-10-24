@@ -67,7 +67,7 @@
 
 <div class="container py-4" style="max-width: 1100px;">
     
-    <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <a href="/Teams" class="btn bg-white border text-decoration-none d-inline-flex align-items-center px-4 py-2 fw-medium rounded-3 back-btn" style="color: #64748b; border-color: #e2e8f0 !important; font-size: 1.05rem;">
             <span class="me-2" style="font-weight: 300;">&larr;</span> Назад до команд
         </a>
@@ -107,19 +107,29 @@
             </div>
         </div>
         
-        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
-        {
-            <div class="d-flex gap-3">
+        <!-- БЛОК З КНОПКАМИ: Чат, Редагувати, Додати -->
+        <div class="d-flex align-items-center gap-3">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <!-- Стильна іконка чату перед кнопкою редагування -->
+                <button onclick="openTeamChatDrawer(@Model.Id)" class="btn d-inline-flex justify-content-center align-items-center shadow-sm rounded-3 px-3 py-2 btn-chat-icon" title="Відкрити чат команди">
+                    <i class="bi bi-chat-dots-fill fs-5"></i>
+                </button>
+            }
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+            {
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn fw-medium rounded-3 px-4 py-2 d-flex align-items-center shadow-sm btn-outline-custom">
                     <i class="bi bi-pencil me-2"></i> Редагувати
                 </a>
                 <a href="/Players/Create" class="btn text-white fw-medium rounded-3 px-4 py-2 d-flex align-items-center shadow-sm btn-success-custom">
                     <i class="bi bi-plus-lg me-2"></i> Додати гравця
                 </a>
-            </div>
-        }
+            }
+        </div>
     </div>
 
+    <!-- Решта секцій зі складом та картками (без змін) -->
     <div class="row g-4 mb-5">
         <div class="col-md-4">
             <div class="card border rounded-4 p-3 shadow-sm bg-white h-100 border-light-custom">
@@ -172,7 +182,7 @@
                     <input type="text" id="playerSearch" class="form-control bg-transparent border-0 ps-0 shadow-none" placeholder="Пошук гравця...">
                 </div>
                 <select id="positionFilter" class="form-select border rounded-3 text-secondary fw-medium shadow-none" style="width: 180px; cursor: pointer;">
-                    <option value="all"><i class="bi bi-funnel"></i> Усі позиції</option>
+                    <option value="all">Усі позиції</option>
                     @foreach (var pos in uniquePositions)
                     {
                         <option value="@pos">@pos</option>
@@ -190,7 +200,6 @@
                         <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Позиція</th>
                         <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Вік</th>
                         <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Статус</th>
-                        
                         @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                         {
                             <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Дії</th>
@@ -216,7 +225,6 @@
                                 data-position="@player.Position">
                                 
                                 <td class="py-3 px-4 border-light text-secondary text-center fw-medium">@player.JerseyNumber</td>
-                                
                                 <td class="py-3 px-4 border-light">
                                     <div class="d-flex align-items-center">
                                         <div class="rounded-circle me-3 d-flex justify-content-center align-items-center text-white shadow-sm" style="width: 36px; height: 36px; background-color: #1a56db;">
@@ -225,15 +233,11 @@
                                         <a href="/Players/Details/@player.Id" class="text-decoration-none text-dark fw-medium">@player.FirstName @player.LastName</a>
                                     </div>
                                 </td>
-                                
                                 <td class="py-3 px-4 border-light text-secondary text-center">@player.Position</td>
                                 <td class="py-3 px-4 border-light text-secondary text-center">@ageDisplay</td>
-                                
                                 <td class="py-3 px-4 border-light text-center">
                                     <span class="badge rounded-pill px-3 py-1 fw-medium" style="background-color: #d1fae5; color: #059669; border: 1px solid #a7f3d0;">Основний</span>
                                 </td>
-                                
-                                <!-- Кнопки дій бачать лише Admin та Manager -->
                                 @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                                 {
                                     <td class="py-3 px-4 border-light text-center">
@@ -241,7 +245,6 @@
                                             <a href="/Players/Edit/@player.Id" class="text-primary text-decoration-none action-btn" title="Редагувати">
                                                 <i class="bi bi-pencil fs-5"></i>
                                             </a>
-                                            <!-- Видаляти може ТІЛЬКИ Admin -->
                                             @if (User.IsInRole("Admin"))
                                             {
                                                 <a href="/Players/Delete/@player.Id" class="text-danger text-decoration-none action-btn" title="Видалити">
@@ -293,41 +296,35 @@
             });
         }
 
-        searchInput.addEventListener('input', filterPlayers);
-        posFilter.addEventListener('change', filterPlayers);
+        if (searchInput) searchInput.addEventListener('input', filterPlayers);
+        if (posFilter) posFilter.addEventListener('change', filterPlayers);
     });
 </script>
 
 <style>
-    .border-light-custom { border: 1px solid #e2e8f0 !important; }
-    
-    .btn-outline-custom { 
-        background-color: #f0f6ff;
-        border: 1px solid #dbeafe; 
-        color: #2563eb; 
-        transition: all 0.2s;
+    /* Стилі для нової іконки чату */
+    .btn-chat-icon {
+        background-color: #d1fae5;
+        color: #0f766e;
+        border: 1px solid #a7f3d0;
+        transition: all 0.2s ease;
     }
-    .btn-outline-custom:hover { 
-        background-color: #e0edff; 
-        border-color: #bfdbfe; 
-        color: #1d4ed8;
+    .btn-chat-icon:hover {
+        background-color: #a7f3d0;
+        color: #0c615a;
+        transform: translateY(-1px);
     }
-    
-    .btn-success-custom { 
-        background-color: #0c615a; 
-        border: none; 
-        transition: background-color 0.2s;
-    }
-    .btn-success-custom:hover { background-color: #094742; color: #ffffff;}
 
+    .border-light-custom { border: 1px solid #e2e8f0 !important; }
+    .btn-outline-custom { 
+        background-color: #f0f6ff; border: 1px solid #dbeafe; color: #2563eb; transition: all 0.2s;
+    }
+    .btn-outline-custom:hover { background-color: #e0edff; border-color: #bfdbfe; color: #1d4ed8; }
+    .btn-success-custom { background-color: #0c615a; border: none; transition: background-color 0.2s; }
+    .btn-success-custom:hover { background-color: #094742; color: #ffffff;}
     .table tbody tr:hover { background-color: #f8fafc; }
-    
     .action-btn { transition: transform 0.2s ease, opacity 0.2s; opacity: 0.8; }
     .action-btn:hover { transform: scale(1.2); opacity: 1; }
-    
     .back-btn { transition: background-color 0.2s, box-shadow 0.2s; }
     .back-btn:hover { background-color: #f8fafc !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    
-    .input-group:focus-within { border-color: #cbd5e1 !important; }
-    .form-select:focus { border-color: #cbd5e1 !important; box-shadow: none; }
 </style>

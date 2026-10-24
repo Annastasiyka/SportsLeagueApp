@@ -1,0 +1,115 @@
+﻿@model IEnumerable<SportsLeagueApp.Models.TeamChatAccess>
+@{
+    ViewData["Title"] = "Модерація чатів";
+    var teams = ViewBag.Teams as Dictionary<int, string> ?? new Dictionary<int, string>();
+}
+
+<div class="container py-5" style="max-width: 1050px;">
+    
+    <div class="mb-4">
+        <a asp-action="Index" class="btn bg-white border text-decoration-none d-inline-flex align-items-center px-4 py-2 fw-medium rounded-3 shadow-sm" style="color: #64748b; border-color: #e2e8f0 !important; font-size: 1.05rem; transition: background-color 0.2s;">
+            <span class="me-2" style="font-weight: 300;">&larr;</span> Назад до панелі адміністратора
+        </a>
+    </div>
+
+    <div class="d-flex align-items-center mb-4">
+        <div class="rounded-circle d-flex justify-content-center align-items-center bg-white shadow-sm border me-3" style="width: 50px; height: 50px;">
+            <i class="bi bi-shield-lock-fill text-warning fs-4"></i>
+        </div>
+        <h2 class="fw-bold m-0" style="color: #1a233a;">Керування доступами до командних чатів</h2>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-3 shadow-sm mb-4">@TempData["Success"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info rounded-3 border-0 shadow-sm p-4 d-flex align-items-center">
+            <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
+            <span class="fs-5">Наразі немає записів про доступ до чатів.</span>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background-color: #f8fafc;">
+                        <tr>
+                            <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0">Користувач</th>
+                            <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0">Команда</th>
+                            <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-center">Статус</th>
+                            <th class="py-3 px-4 text-secondary fw-semibold border-bottom-0 text-end">Дії</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderBy(m => m.Status == "Pending" ? 0 : 1))
+                        {
+                            var teamName = teams.ContainsKey(item.TeamId) ? teams[item.TeamId] : "Невідома команда";
+                            <tr class="border-top">
+                                <td class="py-3 px-4 fw-medium text-dark">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-person-circle text-secondary me-2 fs-5"></i> @item.UserEmail
+                                    </div>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <span class="badge bg-light text-dark border px-3 py-2 rounded-3">@teamName</span>
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <span class="badge rounded-pill px-3 py-1 fw-medium" style="background-color: #fef3c7; color: #d97706; border: 1px solid #fde68a;">Очікує</span>
+                                    }
+                                    else if (item.Status == "Approved")
+                                    {
+                                        <span class="badge rounded-pill px-3 py-1 fw-medium" style="background-color: #d1fae5; color: #059669; border: 1px solid #a7f3d0;">Схвалено</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill px-3 py-1 fw-medium" style="background-color: #fee2e2; color: #dc2626; border: 1px solid #fecaca;">Відхилено</span>
+                                    }
+                                </td>
+                                <td class="py-3 px-4 text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        @if (item.Status == "Pending")
+                                        {
+                                            <form asp-action="ApproveAccess" asp-route-id="@item.Id" method="post">
+                                                <button type="submit" class="btn btn-sm btn-success rounded-3 px-3 d-inline-flex align-items-center">
+                                                    <i class="bi bi-check-lg me-1"></i> Схвалити
+                                                </button>
+                                            </form>
+                                            <form asp-action="RejectAccess" asp-route-id="@item.Id" method="post">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-3 px-3 d-inline-flex align-items-center">
+                                                    <i class="bi bi-x-lg me-1"></i> Відхилити
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (item.Status == "Approved")
+                                        {
+                                            <form asp-action="RevokeChatAccess" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Ви дійсно хочете забрати доступ у цього користувача до чату команди?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-3 px-3 d-inline-flex align-items-center" title="Вилучити права доступу">
+                                                    <i class="bi bi-person-x-fill me-1"></i> Вилучити доступ
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <!-- Для відхилених заявок можна додати кнопку видалення запису з історії -->
+                                            <form asp-action="RevokeChatAccess" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Очистити запис про відхилену заявку?');">
+                                                <button type="submit" class="btn btn-sm btn-light border text-muted rounded-3 px-3">
+                                                    <i class="bi bi-trash3"></i> Видалити запис
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

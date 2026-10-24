@@ -43,12 +43,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Study/5 course/Server Web programing/SportsLeagueApp/SportsLeagueApp/Views/Admin/ChatAccessRequests.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ2hhdEFjY2Vzc1JlcXVlc3RzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Study/5 course/Server Web programing/SportsLeagueApp/SportsLeagueApp/Views/Admin/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Study/5 course/Server Web programing/SportsLeagueApp/SportsLeagueApp/Views/Admin/ManageRoles.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cTWFuYWdlUm9sZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Study/5 course/Server Web programing/SportsLeagueApp/SportsLeagueApp/Views/Chat/TeamChat.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFxUZWFtQ2hhdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Study/5 course/Server Web programing/SportsLeagueApp/SportsLeagueApp/Views/Home/Index.cshtml]

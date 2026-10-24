@@ -1,0 +1,253 @@
+﻿@model IEnumerable<SportsLeagueApp.Models.ChatMessage>
+@{
+    ViewData["Title"] = "Чат команди";
+    var team = ViewBag.Team;
+    bool hasAccess = ViewBag.HasAccess;
+    string accessStatus = ViewBag.AccessStatus;
+    
+    var rawName = User.Identity?.Name ?? "Гість";
+    var currentUserName = rawName.ToLower() == "admin@league.com" ? "Адмін" : (rawName.Contains("@") ? rawName.Split('@')[0] : rawName);
+}
+
+<style>
+    #teamChatDrawer {
+        position: fixed;
+        top: 0;
+        right: -380px;
+        width: 380px;
+        height: 100vh;
+        background-color: #ffffff;
+        box-shadow: -4px 0 15px rgba(0,0,0,0.05);
+        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1045; 
+        display: flex;
+        flex-direction: column;
+    }
+
+        #teamChatDrawer.open {
+            right: 0;
+        }
+</style>
+
+<div class="container mt-5 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+
+            <div class="mb-4">
+                <div class="rounded-circle d-inline-flex justify-content-center align-items-center bg-white border shadow-sm" style="width: 100px; height: 100px;">
+                    <i class="bi bi-shield-lock-fill text-warning" style="font-size: 3rem;"></i>
+                </div>
+            </div>
+
+            <h2 class="fw-bold mb-3" style="color: #111827;">Приватний простір: @team.Name</h2>
+
+            @if (hasAccess)
+            {
+                <p class="text-muted fs-5 mb-4">Чат команди автоматично відкрито у бічній панелі праворуч. Усе листування захищено.</p>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <button id="reopenTeamChatBtn" class="btn btn-register rounded-3 px-4 py-2 fw-medium shadow-sm">
+                        <i class="bi bi-layout-sidebar-reverse me-2"></i> Відкрити панель чату
+                    </button>
+                    <a href="/Teams/Details/@team.Id" class="btn btn-outline-dark rounded-3 px-4 py-2 fw-medium">
+                        <i class="bi bi-arrow-left me-2"></i> Повернутися до команди
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-sm border-0 rounded-4 mx-auto mt-4" style="max-width: 500px;">
+                    <div class="card-body p-5">
+                        <h3 class="text-danger mb-3">🔒 Доступ закрито</h3>
+                        <p class="text-muted mb-4">Доступ до чату <strong>@team.Name</strong> мають лише учасники, схвалені адміністратором.</p>
+
+                        @if (accessStatus == "Pending")
+                        {
+                            <div class="alert alert-warning rounded-3 mb-0 text-start">
+                                <i class="bi bi-hourglass-split me-2"></i> Ваша заявка на розгляді у адміністратора.
+                            </div>
+                        }
+                        else if (accessStatus == "Rejected")
+                        {
+                            <div class="alert alert-danger rounded-3 mb-0 text-start">
+                                <i class="bi bi-x-circle-fill me-2"></i> Заявку відхилено.
+                            </div>
+                        }
+                        else
+                        {
+                            <form asp-action="RequestAccess" asp-route-teamId="@team.Id" method="post">
+                                <button type="submit" class="btn btn-register btn-lg w-100 shadow-sm rounded-3">
+                                    <i class="bi bi-envelope-paper-heart me-2"></i> Подати заявку
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="/Teams/Details/@team.Id" class="text-decoration-none text-muted small">
+                        <i class="bi bi-arrow-left me-1"></i> Назад до команди
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (hasAccess)
+{
+    <!-- ШТОРКА КОМАНДНОГО ЧАТУ -->
+    <div id="teamChatDrawer" class="border-start">
+
+        <!-- Шапка командної шторки -->
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white shadow-sm" style="z-index: 2;">
+            <h5 class="m-0 fw-bold" style="color: #111827;">
+                <i class="bi bi-shield-fill-check me-2 text-warning"></i> @team.Name
+            </h5>
+            <button id="closeTeamChatBtn" class="btn-close shadow-none"></button>
+        </div>
+
+        <!-- Вікно повідомлень з історією -->
+        <div class="flex-grow-1 p-3" style="overflow-y: auto; background-color: #f8fafc;" id="teamChatMessages">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var msg in Model)
+                {
+                    var rawSender = msg.SenderName ?? "Гість";
+                    var senderName = rawSender.ToLower() == "admin@league.com" ? "Адмін" : (rawSender.Contains("@") ? rawSender.Split('@')[0] : rawSender);
+
+                    <div class="mb-3 p-3 rounded-4 bg-white shadow-sm border">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-semibold text-dark" style="font-size: 0.85rem; color: #b45309 !important;">@senderName</span>
+                            <span class="text-muted" style="font-size: 0.75rem;">@msg.Timestamp.ToString("HH:mm")</span>
+                        </div>
+                        <div class="text-secondary" style="word-break: break-word;">@Html.Raw(msg.Content)</div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-muted small text-center my-3" id="emptyTeamChatMsg">Історія порожня. Напишіть першим!</div>
+            }
+        </div>
+
+        <div class="p-3 border-top bg-white">
+            <div class="input-group gap-2">
+                <label for="teamFileInput" class="btn btn-outline-secondary rounded-3 px-3 d-flex align-items-center mb-0" style="cursor: pointer;" title="Прикріпити файл">
+                    <i class="bi bi-paperclip fs-5"></i>
+                </label>
+                <input type="file" id="teamFileInput" class="d-none" />
+
+                <input type="text" id="teamMessageInput" class="form-control rounded-3 border-secondary-subtle shadow-none" placeholder="Написати..." />
+                <button class="btn btn-dark rounded-3 px-3 fw-medium" type="button" id="sendTeamButton"><i class="bi bi-send-fill"></i></button>
+            </div>
+            <div id="teamFileNameDisplay" class="text-muted small mt-1 ps-1"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script>
+        {
+            const teamId = "@team.Id";
+const teamUserName = "@Html.Raw(currentUserName)";
+            const teamDrawer = document.getElementById('teamChatDrawer');
+            const appWrapper = document.getElementById('app-wrapper');
+            const teamMsgContainer = document.getElementById('teamChatMessages');
+
+            function openTeamDrawer() {
+                teamDrawer.classList.add('open');
+                if(appWrapper) appWrapper.classList.add('chat-open');
+                teamMsgContainer.scrollTop = teamMsgContainer.scrollHeight;
+            }
+
+            function closeTeamDrawer() {
+                teamDrawer.classList.remove('open');
+                if(appWrapper) appWrapper.classList.remove('chat-open');
+            }
+
+            setTimeout(openTeamDrawer, 100);
+
+            document.getElementById('closeTeamChatBtn').addEventListener('click', closeTeamDrawer);
+            document.getElementById('reopenTeamChatBtn').addEventListener('click', openTeamDrawer);
+
+            const teamConnection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+            document.getElementById("sendTeamButton").disabled = true;
+
+            teamConnection.on("ReceiveMessage", function (user, message) {
+                const emptyMsg = document.getElementById("emptyTeamChatMsg");
+                if (emptyMsg) emptyMsg.remove();
+
+                const now = new Date();
+                const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+                const messageDiv = document.createElement("div");
+                messageDiv.classList.add("mb-3", "p-3", "rounded-4", "bg-white", "shadow-sm", "border");
+                messageDiv.innerHTML = `<div class="d-flex justify-content-between align-items-center mb-1"><span class="fw-semibold" style="font-size: 0.85rem; color: #b45309 !important;">${escapeHtml(user)}</span><span class="text-muted" style="font-size: 0.75rem;">${timeStr}</span></div><div class="text-secondary" style="word-break: break-word;">${message}</div>`;
+                teamMsgContainer.appendChild(messageDiv);
+                teamMsgContainer.scrollTop = teamMsgContainer.scrollHeight;
+            });
+
+            teamConnection.start().then(function () {
+                teamConnection.invoke("JoinTeamGroup", teamId);
+                document.getElementById("sendTeamButton").disabled = false;
+            }).catch(err => console.error(err.toString()));
+
+            document.getElementById("sendTeamButton").addEventListener("click", async function (event) {
+                event.preventDefault();
+                const messageInput = document.getElementById("teamMessageInput");
+                const message = messageInput.value.trim();
+                const fileInput = document.getElementById("teamFileInput");
+
+                let finalContent = escapeHtml(message);
+
+                if (fileInput.files.length > 0) {
+                    const formData = new FormData();
+                    formData.append("file", fileInput.files[0]);
+
+                    try {
+                        const response = await fetch('/Chat/UploadFile', { method: 'POST', body: formData });
+                        const result = await response.json();
+
+                        if (result.success) {
+                            const ext = result.name.split('.').pop().toLowerCase();
+                            if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+                                finalContent += `<br><img src="${result.url}" class="img-fluid rounded-3 mt-2 shadow-sm" style="max-height: 200px;" />`;
+                            } else {
+                                finalContent += `<br><a href="${result.url}" download="${result.name}" class="btn btn-sm btn-outline-dark mt-2"><i class="bi bi-file-earmark-arrow-down me-1"></i> ${result.name}</a>`;
+                            }
+                        }
+                    } catch (err) {
+                        alert("Не вдалося завантажити файл.");
+                        return;
+                    }
+                }
+
+                if (finalContent !== "") {
+                    teamConnection.invoke("SendMessageToTeam", teamId, teamUserName, finalContent).catch(err => console.error(err.toString()));
+                    messageInput.value = "";
+                    fileInput.value = "";
+                    document.getElementById("teamFileNameDisplay").innerText = "";
+                }
+            });
+
+            document.getElementById("teamFileInput").addEventListener("change", function () {
+                if (this.files.length > 0) {
+                    document.getElementById("teamFileNameDisplay").innerText = `Файл: ${this.files[0].name}`;
+                } else {
+                    document.getElementById("teamFileNameDisplay").innerText = "";
+                }
+            });
+
+            document.getElementById("teamMessageInput").addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    document.getElementById("sendTeamButton").click();
+                    event.preventDefault();
+                }
+            });
+
+            function escapeHtml(text) {
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+                return text.replace(/[&<>"']/g, m => map[m] || m);
+            }
+        }
+    </script>
+}

@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using SportsLeagueApp.Data
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext DbContext
+
+<!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="utf-8" />
@@ -14,7 +18,21 @@
             body {
                 background-color: #f8f9fa;
                 font-family: 'Segoe UI', Roboto, sans-serif;
+                overflow-x: hidden;
             }
+
+            #app-wrapper {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                width: 100%;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+                #app-wrapper.chat-open {
+                    margin-right: 380px;
+                    width: calc(100% - 380px);
+                }
 
             .navbar {
                 background-color: #ffffff;
@@ -30,7 +48,38 @@
             .content-wrapper {
                 max-width: 1150px;
                 margin: 0 auto;
+                width: 100%;
             }
+
+            .chat-drawer {
+                position: fixed;
+                top: 0;
+                right: -380px;
+                width: 380px;
+                height: 100vh;
+                background-color: #ffffff;
+                box-shadow: -4px 0 15px rgba(0,0,0,0.05);
+                transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 1050;
+                display: flex;
+                flex-direction: column;
+            }
+
+                .chat-drawer.open {
+                    right: 0;
+                }
+
+            .btn-chat-toggle {
+                background-color: #f1f5f9;
+                color: #64748b;
+                border: 1px solid #e2e8f0;
+                transition: all 0.2s;
+            }
+
+                .btn-chat-toggle:hover {
+                    background-color: #e2e8f0;
+                    color: #475569;
+                }
 
             .btn-login {
                 background-color: #ffffff;
@@ -60,64 +109,401 @@
     </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-md py-3 shadow-sm">
-            <div class="container-fluid px-4 px-lg-5 d-flex justify-content-between align-items-center">
-                <a class="navbar-brand m-0" asp-controller="Home" asp-action="Index">Спортивна ліга</a>
+    @{
+        var rawName = User.Identity?.Name ?? "Гість";
+        var isSuperAdmin = rawName.ToLower() == "admin@league.com";
+        var currentUserName = isSuperAdmin ? "Адмін" : (rawName.Contains("@") ? rawName.Split('@')[0] : rawName);
+    }
 
-                <div class="d-flex align-items-center gap-3">
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <div class="dropdown">
-                            <div class="d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-                                <div class="bg-dark text-white rounded-circle d-flex justify-content-center align-items-center me-2" style="width: 36px; height: 36px;">
-                                    <i class="bi bi-person-fill"></i>
-                                </div>
-                                <div class="d-flex flex-column align-items-start me-1">
-                                    <span class="fw-semibold text-dark lh-1">@User.Identity.Name</span>
-                                    <small class="text-muted" style="font-size: 0.75rem;">
-                                        @(User.IsInRole("Admin") ? "Адміністратор" : "Користувач")
-                                    </small>
-                                </div>
-                                <i class="bi bi-chevron-down small text-secondary ms-1"></i>
-                            </div>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
+    <div id="app-wrapper">
+        <header>
+            <nav class="navbar navbar-expand-md py-3 shadow-sm">
+                <div class="container-fluid px-4 px-lg-5 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <a class="navbar-brand m-0" asp-controller="Home" asp-action="Index">Спортивна ліга</a>
+                    </div>
 
-                                @if (User.IsInRole("Admin"))
-                                {
+                    <div class="d-flex align-items-center gap-3">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="dropdown">
+                                <div class="d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                                    <div class="bg-dark text-white rounded-circle d-flex justify-content-center align-items-center me-2" style="width: 36px; height: 36px;">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                    <div class="d-flex flex-column align-items-start me-1">
+                                        <span class="fw-semibold text-dark lh-1">@currentUserName</span>
+                                    </div>
+                                    <i class="bi bi-chevron-down small text-secondary ms-1"></i>
+                                </div>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><a asp-controller="Admin" asp-action="Index" class="dropdown-item fw-medium py-2 text-dark"><i class="bi bi-gear-fill me-2" style="color: #0f766e;"></i>Адмін-панель</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
                                     <li>
-                                        <a asp-controller="Admin" asp-action="Index" class="dropdown-item fw-medium py-2 text-dark">
-                                            <i class="bi bi-gear-fill me-2" style="color: #0f766e;"></i>Адмін-панель
-                                        </a>
+                                        <form asp-controller="Account" asp-action="Logout" method="post">
+                                            <button type="submit" class="dropdown-item text-danger fw-medium py-2"><i class="bi bi-box-arrow-right me-2"></i>Вийти з акаунта</button>
+                                        </form>
                                     </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                }
+                                </ul>
+                            </div>
 
-                                <li>
-                                    <form asp-controller="Account" asp-action="Logout" method="post">
-                                        <button type="submit" class="dropdown-item text-danger fw-medium py-2">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Вийти з акаунта
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
+                            <button id="chatToggleBtn" class="btn btn-chat-toggle rounded-circle d-flex justify-content-center align-items-center shadow-sm ms-2" style="width: 42px; height: 42px;" title="Відкрити чати">
+                                <i class="bi bi-chat-dots-fill fs-5"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-login fw-medium rounded-3 px-4 py-2">Вхід</a>
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-register fw-medium rounded-3 px-4 py-2">Реєстрація</a>
+                        }
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="content-wrapper py-5 flex-grow-1">
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        var globalHistory = DbContext.ChatMessages.Where(m => m.TeamId == null).OrderBy(m => m.Timestamp).Take(50).ToList();
+        var allTeams = DbContext.Teams.ToList();
+
+        <div id="mainChatDrawer" class="chat-drawer border-start">
+
+            <!-- ====== ВИД: ГЛОБАЛЬНИЙ ЧАТ ====== -->
+            <div id="globalChatContainer" class="d-flex flex-column h-100">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white shadow-sm" style="z-index: 2;">
+                    <h5 class="m-0 fw-bold" style="color: #111827;"><i class="bi bi-chat-dots me-2" style="color: #0f766e;"></i> Загальний чат</h5>
+                    <div>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <!-- Кнопка очищення глобального чату -->
+                            <button id="clearGlobalChatBtn" class="btn btn-sm btn-outline-danger border-0 rounded-circle me-1" title="Очистити чат"><i class="bi bi-trash3"></i></button>
+                        }
+                        <button id="closeGlobalChatBtn" class="btn-close shadow-none"></button>
+                    </div>
+                </div>
+
+                <div class="px-3 py-2 bg-light border-bottom d-flex gap-2">
+                    <select id="drawerTeamSelect" class="form-select form-select-sm shadow-none rounded-3">
+                        <option value="">-- Перейти до чату команди --</option>
+                        @foreach (var t in allTeams)
+                        {
+                            <option value="@t.Id">@t.Name</option>
+                        }
+                    </select>
+                    <button id="drawerGoToTeam" class="btn btn-sm btn-outline-dark rounded-3 px-3">Go</button>
+                </div>
+
+                <div class="flex-grow-1 p-3" style="overflow-y: auto; background-color: #f8fafc;" id="globalChatMessages">
+                    @if (globalHistory.Any())
+                    {
+                        foreach (var msg in globalHistory)
+                        {
+                            var rawSender = msg.SenderName ?? "Гість";
+                            var senderName = rawSender.ToLower() == "admin@league.com" ? "Адмін" : (rawSender.Contains("@") ? rawSender.Split('@')[0] : rawSender);
+
+                            <div class="mb-3 p-3 rounded-4 bg-white shadow-sm border">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-semibold text-dark" style="font-size: 0.85rem; color: #0f766e !important;">@senderName</span>
+                                    <span class="text-muted" style="font-size: 0.75rem;">@msg.Timestamp.ToString("HH:mm")</span>
+                                </div>
+                                <div class="text-secondary" style="word-break: break-word;">@Html.Raw(msg.Content)</div>
+                            </div>
+                        }
                     }
                     else
                     {
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-login fw-medium rounded-3 px-4 py-2">Вхід</a>
-                        <a asp-controller="Account" asp-action="Register" class="btn btn-register fw-medium rounded-3 px-4 py-2">Реєстрація</a>
+                        <div class="text-muted small text-center my-3" id="emptyGlobalMsg">Повідомлень ще немає. Будьте першим!</div>
                     }
                 </div>
-            </div>
-        </nav>
-    </header>
 
-    <div class="content-wrapper py-5">
-        <main role="main">
-            @RenderBody()
-        </main>
-    </div>
+                <div class="p-3 border-top bg-white">
+                    <div class="input-group gap-2">
+                        <label for="globalFileInput" class="btn btn-outline-secondary rounded-3 px-3 d-flex align-items-center mb-0" style="cursor: pointer;">
+                            <i class="bi bi-paperclip fs-5"></i>
+                        </label>
+                        <input type="file" id="globalFileInput" class="d-none" />
+                        <input type="text" id="globalMessageInput" class="form-control rounded-3 border-secondary-subtle shadow-none" placeholder="Повідомлення..." />
+                        <button class="btn btn-register rounded-3 px-3 fw-medium" type="button" id="globalSendButton"><i class="bi bi-send-fill"></i></button>
+                    </div>
+                    <div id="globalFileNameDisplay" class="text-muted small mt-1 ps-1"></div>
+                </div>
+            </div>
+
+            <!-- ====== ВИД: КОМАНДНИЙ ЧАТ ====== -->
+            <div id="teamChatContainer" class="d-none flex-column h-100">
+
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white shadow-sm" style="z-index: 2;">
+                    <div class="d-flex align-items-center">
+                        <button id="backToGlobalBtn" class="btn btn-sm btn-light rounded-circle me-2 shadow-sm" title="Назад до загального"><i class="bi bi-arrow-left"></i></button>
+                        <h5 class="m-0 fw-bold text-truncate" style="color: #111827; max-width: 170px;">
+                            <i class="bi bi-shield-fill-check me-2 text-warning"></i><span id="teamChatTitle">Команда</span>
+                        </h5>
+                    </div>
+                    <div>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <!-- Кнопка очищення командного чату -->
+                            <button id="clearTeamChatBtn" class="btn btn-sm btn-outline-danger border-0 rounded-circle me-1" title="Очистити чат"><i class="bi bi-trash3"></i></button>
+                        }
+                        <button id="closeTeamChatBtn" class="btn-close shadow-none"></button>
+                    </div>
+                </div>
+
+                <div id="teamChatGranted" class="d-none flex-column h-100">
+                    <div class="flex-grow-1 p-3" style="overflow-y: auto; background-color: #f8fafc;" id="teamChatMessages"></div>
+                    <div class="p-3 border-top bg-white">
+                        <div class="input-group gap-2">
+                            <label for="teamFileInput" class="btn btn-outline-secondary rounded-3 px-3 d-flex align-items-center mb-0" style="cursor: pointer;">
+                                <i class="bi bi-paperclip fs-5"></i>
+                            </label>
+                            <input type="file" id="teamFileInput" class="d-none" />
+                            <input type="text" id="teamMessageInput" class="form-control rounded-3 border-secondary-subtle shadow-none" placeholder="Команді..." />
+                            <button class="btn btn-dark rounded-3 px-3 fw-medium" type="button" id="teamSendButton"><i class="bi bi-send-fill"></i></button>
+                        </div>
+                        <div id="teamFileNameDisplay" class="text-muted small mt-1 ps-1"></div>
+                    </div>
+                </div>
+
+                <div id="teamChatDenied" class="d-none flex-grow-1 flex-column justify-content-center align-items-center text-center p-4" style="background-color: #f8fafc;">
+                    <div class="rounded-circle d-flex justify-content-center align-items-center bg-white border shadow-sm mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-shield-lock-fill text-warning" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Доступ закрито</h5>
+                    <p class="text-muted small mb-4">Доступ мають лише схвалені учасники.</p>
+                    <div id="accessStatusContainer" class="w-100"></div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+        <script>
+                const chatDrawer = document.getElementById('mainChatDrawer');
+                const appWrapper = document.getElementById('app-wrapper');
+                let currentTeamId = null;
+                const userName = "@Html.Raw(currentUserName)";
+
+                document.getElementById("clearGlobalChatBtn")?.addEventListener("click", async () => {
+                    if(confirm("Очистити всі повідомлення в глобальному чаті?")) {
+                        await fetch('/Chat/ClearChat', { method: 'POST' });
+                        document.getElementById("globalChatMessages").innerHTML = '<div class="text-muted small text-center my-3" id="emptyGlobalMsg">Чат очищено. Напишіть першим!</div>';
+                    }
+                });
+
+                document.getElementById("clearTeamChatBtn")?.addEventListener("click", async () => {
+                    if(currentTeamId && confirm("Очистити історію повідомлень цієї команди?")) {
+                        await fetch(`/Chat/ClearChat?teamId=${currentTeamId}`, { method: 'POST' });
+                        document.getElementById("teamChatMessages").innerHTML = '<div class="text-muted small text-center my-3" id="emptyTeamMsg">Чат очищено. Напишіть першим!</div>';
+                    }
+                });
+
+                function toggleDrawer(forceOpen = false) {
+                    if(forceOpen) {
+                        chatDrawer.classList.add('open');
+                        appWrapper.classList.add('chat-open');
+                    } else {
+                        chatDrawer.classList.toggle('open');
+                        appWrapper.classList.toggle('chat-open');
+                    }
+                    const msgBox = document.getElementById('globalChatMessages');
+                    msgBox.scrollTop = msgBox.scrollHeight;
+                }
+
+                function closeDrawer() {
+                    chatDrawer.classList.remove('open');
+                    appWrapper.classList.remove('chat-open');
+                }
+
+                document.getElementById('chatToggleBtn').addEventListener('click', () => toggleDrawer());
+                document.getElementById('closeGlobalChatBtn').addEventListener('click', closeDrawer);
+                document.getElementById('closeTeamChatBtn').addEventListener('click', closeDrawer);
+
+                async function openTeamChat(tId) {
+                    currentTeamId = tId;
+                    document.getElementById('globalChatContainer').classList.replace('d-flex', 'd-none');
+                    document.getElementById('teamChatContainer').classList.replace('d-none', 'd-flex');
+
+                    try {
+                        const res = await fetch(`/Chat/GetTeamChatData?teamId=${tId}`);
+                        const data = await res.json();
+
+                        document.getElementById('teamChatTitle').innerText = data.teamName;
+
+                        if (data.hasAccess) {
+                            document.getElementById('teamChatDenied').classList.replace('d-flex', 'd-none');
+                            document.getElementById('teamChatGranted').classList.replace('d-none', 'd-flex');
+
+                            const msgBox = document.getElementById('teamChatMessages');
+                            msgBox.innerHTML = '';
+                            if (data.messages && data.messages.length > 0) {
+                                data.messages.forEach(m => {
+                                    msgBox.innerHTML += `
+                                        <div class="mb-3 p-3 rounded-4 bg-white shadow-sm border">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-semibold" style="font-size: 0.85rem; color: #b45309;">${escapeHtml(m.senderName)}</span>
+                                                <span class="text-muted" style="font-size: 0.75rem;">${m.timestamp}</span>
+                                            </div>
+                                            <div class="text-secondary" style="word-break: break-word;">${m.content}</div>
+                                        </div>`;
+                                });
+                            } else {
+                                msgBox.innerHTML = '<div class="text-muted small text-center my-3" id="emptyTeamMsg">Напишіть першим!</div>';
+                            }
+                            msgBox.scrollTop = msgBox.scrollHeight;
+
+                            connection.invoke("JoinTeamGroup", tId.toString()).catch(err => console.error(err));
+                        } else {
+                            document.getElementById('teamChatGranted').classList.replace('d-flex', 'd-none');
+                            document.getElementById('teamChatDenied').classList.replace('d-none', 'd-flex');
+
+                            const statusBox = document.getElementById('accessStatusContainer');
+                            if (data.accessStatus === 'Pending') {
+                                statusBox.innerHTML = '<div class="alert alert-warning small rounded-3 mb-0"><i class="bi bi-hourglass-split"></i> Заявка на розгляді</div>';
+                            } else if (data.accessStatus === 'Rejected') {
+                                statusBox.innerHTML = '<div class="alert alert-danger small rounded-3 mb-0"><i class="bi bi-x-circle-fill"></i> Заявку відхилено</div>';
+                            } else {
+                                statusBox.innerHTML = `<button onclick="window.requestAccessAjax(${tId})" class="btn btn-register w-100 rounded-3 py-2 fw-medium">Надіслати заявку</button>`;
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Помилка завантаження чату:", error);
+                    }
+                }
+
+                window.requestAccessAjax = async function(tId) {
+                    await fetch(`/Chat/RequestAccessAjax?teamId=${tId}`, { method: 'POST' });
+                    document.getElementById('accessStatusContainer').innerHTML = '<div class="alert alert-success small rounded-3 mb-0"><i class="bi bi-check-circle"></i> Заявку успішно надіслано!</div>';
+                    setTimeout(() => { backToGlobal(); }, 2000);
+                }
+
+                function backToGlobal() {
+                    if (currentTeamId) {
+                        connection.invoke("LeaveTeamGroup", currentTeamId.toString()).catch(e => console.error(e));
+                        currentTeamId = null;
+                    }
+                    document.getElementById('teamChatContainer').classList.replace('d-flex', 'd-none');
+                    document.getElementById('globalChatContainer').classList.replace('d-none', 'd-flex');
+                    document.getElementById('drawerTeamSelect').value = "";
+                }
+
+                window.openTeamChatDrawer = function(tId) {
+                    toggleDrawer(true);
+                    document.getElementById('drawerTeamSelect').value = tId;
+                    openTeamChat(tId);
+                }
+
+                document.getElementById('drawerGoToTeam').addEventListener('click', () => {
+                    const tId = document.getElementById('drawerTeamSelect').value;
+                    if(tId) openTeamChat(tId);
+                });
+                document.getElementById('backToGlobalBtn').addEventListener('click', backToGlobal);
+
+                // SignalR
+                const connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+                document.getElementById("globalSendButton").disabled = true;
+                document.getElementById("teamSendButton").disabled = true;
+
+                connection.on("ReceiveGlobalMessage", function (user, message) {
+                    const emptyMsg = document.getElementById("emptyGlobalMsg");
+                    if (emptyMsg) emptyMsg.remove();
+
+                    const now = new Date();
+                    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                    const msgContainer = document.getElementById("globalChatMessages");
+
+                    const div = document.createElement("div");
+                    div.classList.add("mb-3", "p-3", "rounded-4", "bg-white", "shadow-sm", "border");
+                    div.innerHTML = `<div class="d-flex justify-content-between align-items-center mb-1"><span class="fw-semibold text-dark" style="font-size: 0.85rem; color: #0f766e !important;">${escapeHtml(user)}</span><span class="text-muted" style="font-size: 0.75rem;">${timeStr}</span></div><div class="text-secondary" style="word-break: break-word;">${message}</div>`;
+                    msgContainer.appendChild(div);
+                    msgContainer.scrollTop = msgContainer.scrollHeight;
+                });
+
+                connection.on("ReceiveTeamMessage", function (user, message) {
+                    const emptyMsg = document.getElementById("emptyTeamMsg");
+                    if (emptyMsg) emptyMsg.remove();
+
+                    const now = new Date();
+                    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                    const msgContainer = document.getElementById("teamChatMessages");
+
+                    const div = document.createElement("div");
+                    div.classList.add("mb-3", "p-3", "rounded-4", "bg-white", "shadow-sm", "border");
+                    div.innerHTML = `<div class="d-flex justify-content-between align-items-center mb-1"><span class="fw-semibold" style="font-size: 0.85rem; color: #b45309;">${escapeHtml(user)}</span><span class="text-muted" style="font-size: 0.75rem;">${timeStr}</span></div><div class="text-secondary" style="word-break: break-word;">${message}</div>`;
+                    msgContainer.appendChild(div);
+                    msgContainer.scrollTop = msgContainer.scrollHeight;
+                });
+
+                connection.start().then(function () {
+                    document.getElementById("globalSendButton").disabled = false;
+                    document.getElementById("teamSendButton").disabled = false;
+                }).catch(err => console.error(err.toString()));
+
+                async function sendMessageHandler(isGlobal) {
+                    const inputId = isGlobal ? "globalMessageInput" : "teamMessageInput";
+                    const fileId = isGlobal ? "globalFileInput" : "teamFileInput";
+                    const displayId = isGlobal ? "globalFileNameDisplay" : "teamFileNameDisplay";
+
+                    const msgInput = document.getElementById(inputId);
+                    const fileInput = document.getElementById(fileId);
+                    let message = escapeHtml(msgInput.value.trim());
+
+                    if (fileInput.files.length > 0) {
+                        const formData = new FormData();
+                        formData.append("file", fileInput.files[0]);
+                        try {
+                            const res = await fetch('/Chat/UploadFile', { method: 'POST', body: formData });
+                            const result = await res.json();
+                            if (result.success) {
+                                const ext = result.name.split('.').pop().toLowerCase();
+                                if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+                                    message += `<br><img src="${result.url}" class="img-fluid rounded-3 mt-2 shadow-sm" style="max-height: 200px;" />`;
+                                } else {
+                                    message += `<br><a href="${result.url}" download="${result.name}" class="btn btn-sm btn-outline-dark mt-2"><i class="bi bi-file-earmark-arrow-down me-1"></i> ${result.name}</a>`;
+                                }
+                            }
+                        } catch (err) { alert("Не вдалося завантажити файл."); return; }
+                    }
+
+                    if (message !== "") {
+                        if(isGlobal) {
+                            connection.invoke("SendMessage", userName, message).catch(err => console.error(err.toString()));
+                        } else {
+                            connection.invoke("SendMessageToTeam", currentTeamId.toString(), userName, message).catch(err => console.error(err.toString()));
+                        }
+                        msgInput.value = "";
+                        fileInput.value = "";
+                        document.getElementById(displayId).innerText = "";
+                    }
+                }
+
+                document.getElementById("globalSendButton").addEventListener("click", (e) => { e.preventDefault(); sendMessageHandler(true); });
+                document.getElementById("teamSendButton").addEventListener("click", (e) => { e.preventDefault(); sendMessageHandler(false); });
+
+                document.getElementById("globalFileInput").addEventListener("change", function () {
+                    document.getElementById("globalFileNameDisplay").innerText = this.files.length > 0 ? `Файл: ${this.files[0].name}` : "";
+                });
+                document.getElementById("teamFileInput").addEventListener("change", function () {
+                    document.getElementById("teamFileNameDisplay").innerText = this.files.length > 0 ? `Файл: ${this.files[0].name}` : "";
+                });
+
+                document.getElementById("globalMessageInput").addEventListener("keypress", (e) => { if (e.key === "Enter") { document.getElementById("globalSendButton").click(); e.preventDefault(); } });
+                document.getElementById("teamMessageInput").addEventListener("keypress", (e) => { if (e.key === "Enter") { document.getElementById("teamSendButton").click(); e.preventDefault(); } });
+
+                function escapeHtml(text) {
+                    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+                    return text.replace(/[&<>"']/g, m => map[m] || m);
+                }
+        </script>
+    }
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

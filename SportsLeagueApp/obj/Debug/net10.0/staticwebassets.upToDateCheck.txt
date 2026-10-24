@@ -61,6 +61,13 @@ wwwroot\lib\jquery\dist\jquery.slim.js
 wwwroot\lib\jquery\dist\jquery.slim.min.js
 wwwroot\lib\jquery\dist\jquery.slim.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\uploads\38eea850-e032-4c5e-9cb2-c0b0e928a822_осінь.png
+wwwroot\uploads\3b75cbbc-f1eb-4d04-abf7-9943b2d20d08_осінь.png
+wwwroot\uploads\3eef62b0-9433-48df-a780-57126fb9048f_Доповідь 1.pdf
+wwwroot\uploads\446d4854-4377-486d-998b-08262b12956b_осінь.png
+wwwroot\uploads\b1a48af5-bdfa-4309-8f6c-17cee8903192_Лабораторна робота №4.pdf
+wwwroot\uploads\b699b3d1-d93b-4ab4-aa73-f70cf0f5df1c_Лабораторна робота №4 (1).pdf
+wwwroot\uploads\d28d2683-ae55-41f5-a1cc-d61a34e5484d_Доповідь 1.pdf
 C:\Study\5 course\Server Web programing\SportsLeagueApp\SportsLeagueApp\wwwroot\css\site.css
 C:\Study\5 course\Server Web programing\SportsLeagueApp\SportsLeagueApp\wwwroot\favicon.ico
 C:\Study\5 course\Server Web programing\SportsLeagueApp\SportsLeagueApp\wwwroot\js\site.js
